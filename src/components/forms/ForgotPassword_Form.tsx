@@ -44,7 +44,7 @@ export default function ForgotPassword_Form() {
             {/* Email Field */}
             <div className="mb-6">
                 <label className="block text-sm font-medium mb-2">Email address</label>
-                <input type="email" {...register("email")} placeholder="Enter your email" className="w-full px-4 py-3 border border-[#D9D9D9] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input type="email" {...register("email")} placeholder="Enter your email" className="w-full px-4 py-3 border border-[#D9D9D9] rounded-md focus:outline-none focus:ring-2 focus:ring-[#412667]" />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
             </div>
 

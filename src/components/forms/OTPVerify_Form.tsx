@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, useRef } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
@@ -23,14 +23,29 @@ export default function OTPVerify_Form() {
     const [canResend, setCanResend] = useState(false);
     const [countdown, setCountdown] = useState(30);
 
+    const inputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+
     const {
-        register,
+        control,
         handleSubmit,
         formState: { errors },
         setValue,
     } = useForm<OTPFormData>({
         resolver: zodResolver(otpSchema),
         defaultValues: {
+            otp1: "",
+            otp2: "",
+            otp3: "",
+            otp4: "",
+            otp5: "",
+            otp6: "",
+        },
+    });
+
+    // Use useWatch instead of watch
+    const otpValues = useWatch({
+        control,
+        defaultValue: {
             otp1: "",
             otp2: "",
             otp3: "",
@@ -48,12 +63,71 @@ export default function OTPVerify_Form() {
         setIsLoading(false);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof OTPFormData, nextField?: keyof OTPFormData) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const value = e.target.value;
-        setValue(fieldName, value);
+        const fieldName = `otp${index + 1}` as keyof OTPFormData;
 
-        if (value && nextField) {
-            document.getElementById(nextField)?.focus();
+        // If user pastes 6 digits
+        if (value.length === 6 && /^\d+$/.test(value)) {
+            const digits = value.split("");
+            digits.forEach((digit, i) => {
+                const digitFieldName = `otp${i + 1}` as keyof OTPFormData;
+                setValue(digitFieldName, digit, { shouldValidate: true });
+                if (inputRefs[i].current) {
+                    inputRefs[i].current!.value = digit;
+                }
+            });
+            inputRefs[5].current?.focus();
+            return;
+        }
+
+        // Handle single digit input
+        if (value.length === 1 && /^\d$/.test(value)) {
+            setValue(fieldName, value, { shouldValidate: true });
+
+            // Move to next input
+            if (index < 5 && value) {
+                setTimeout(() => {
+                    inputRefs[index + 1].current?.focus();
+                }, 0);
+            }
+        } else if (value.length === 0) {
+            // Handle backspace
+            setValue(fieldName, "", { shouldValidate: true });
+        } else {
+            // Clear if invalid input
+            setValue(fieldName, "", { shouldValidate: true });
+            e.target.value = "";
+        }
+    };
+
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData("text").trim();
+
+        if (pastedData.length === 6 && /^\d+$/.test(pastedData)) {
+            const digits = pastedData.split("");
+            digits.forEach((digit, i) => {
+                const fieldName = `otp${i + 1}` as keyof OTPFormData;
+                setValue(fieldName, digit, { shouldValidate: true });
+                if (inputRefs[i].current) {
+                    inputRefs[i].current!.value = digit;
+                }
+            });
+            setTimeout(() => {
+                inputRefs[5].current?.focus();
+            }, 0);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+        const fieldName = `otp${index + 1}` as keyof OTPFormData;
+        const currentValue = otpValues[fieldName];
+
+        if (e.key === "Backspace" && !currentValue && index > 0) {
+            setTimeout(() => {
+                inputRefs[index - 1].current?.focus();
+            }, 0);
         }
     };
 
@@ -71,8 +145,21 @@ export default function OTPVerify_Form() {
                 return prev - 1;
             });
         }, 1000);
+    };
 
-        router.push("/auth/reset-password");
+    const handleVerify = () => {
+        // Check if all OTP fields are filled
+        const isComplete = Object.values(otpValues).every((value) => value && value.length === 1);
+
+        if (isComplete) {
+            setIsLoading(true);
+            setTimeout(() => {
+                setIsLoading(false);
+                router.push("/auth/reset-password");
+            }, 1000);
+        } else {
+            alert("Please enter all 6 digits of the OTP");
+        }
     };
 
     return (
@@ -84,11 +171,23 @@ export default function OTPVerify_Form() {
             </div>
 
             {/* OTP Fields */}
-            <div className="mb-8">
-                <div className="flex justify-between gap-2 mb-2">
-                    {[1, 2, 3, 4, 5, 6].map((num) => (
-                        <div key={num} className="flex-1">
-                            <input id={`otp${num}`} type="text" maxLength={1} {...register(`otp${num}` as keyof OTPFormData)} onChange={(e) => handleInputChange(e, `otp${num}` as keyof OTPFormData, num < 6 ? (`otp${num + 1}` as keyof OTPFormData) : undefined)} className="w-full h-14 text-center text-xl border border-[#D9D9D9] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <div className="mb-3 md:mb-8">
+                <div className="flex justify-center gap-2 mb-2">
+                    {[0, 1, 2, 3, 4, 5].map((index) => (
+                        <div key={index} className="flex-1 flex justify-center">
+                            <input
+                                id={`otp${index + 1}`}
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                maxLength={6}
+                                ref={inputRefs[index]}
+                                onPaste={handlePaste}
+                                onChange={(e) => handleInputChange(e, index)}
+                                onKeyDown={(e) => handleKeyDown(e, index)}
+                                value={otpValues[`otp${index + 1}` as keyof OTPFormData] || ""}
+                                className="w-10 h-10 md:w-14 md:h-14 text-center text-xl border border-[#412667] text-[#412667] rounded-md focus:outline-none focus:ring-2 focus:ring-[#412667]"
+                            />
                         </div>
                     ))}
                 </div>
@@ -110,7 +209,7 @@ export default function OTPVerify_Form() {
             </div>
 
             {/* Verify Button */}
-            <button type="submit" disabled={isLoading} className="w-full bg-[#412667] font-bold rounded-[10px] text-white py-3 px-4 cursor-pointer hover:bg-[#412667] transition-colors disabled:opacity-50">
+            <button type="button" onClick={handleVerify} disabled={isLoading} className="w-full bg-[#412667] font-bold rounded-[10px] text-white py-3 px-4 cursor-pointer hover:bg-[#412667] transition-colors disabled:opacity-50">
                 {isLoading ? "Verifying..." : "Verify email"}
             </button>
         </form>
