@@ -169,7 +169,7 @@ export default function Page() {
                             Previous
                         </Button>
                         {pageNumbers.map((page) => (
-                            <Button key={page} variant={currentPage === page ? "default" : "outline"} onClick={() => handlePageChange(page)} className="w-10 h-10">
+                            <Button key={page} variant={currentPage === page ? "default" : "outline"} onClick={() => handlePageChange(page)} className={`w-10 h-10 ${currentPage === page ? "bg-[#5C22BF] text-white border-[#5C22BF]" : ""}`}>
                                 {page}
                             </Button>
                         ))}
