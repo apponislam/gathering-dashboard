@@ -1,51 +1,34 @@
-"use client";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { Home } from "lucide-react";
 
-export default function Minimal404() {
+export default function Simple404() {
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 bg-linear-to-br from-gray-50 to-white">
-            <div className="max-w-md w-full text-center">
-                {/* Gradient Circle */}
-                <div className="relative mb-8">
-                    <div className="w-40 h-40 mx-auto bg-linear-to-r from-[#412667] to-[#1AA367] rounded-full flex items-center justify-center">
-                        <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center">
-                            <span className="text-4xl font-black bg-linear-to-r from-[#412667] to-[#1AA367] bg-clip-text text-transparent">404</span>
-                        </div>
-                    </div>
+        <div className="min-h-screen flex items-center justify-center p-6 bg-white">
+            <div className="text-center max-w-md">
+                {/* 404 Number */}
+                <div className="mb-6">
+                    <span className="text-8xl font-black text-[#412667]">4</span>
+                    <span className="text-8xl font-black text-[#1AA367]">0</span>
+                    <span className="text-8xl font-black text-[#67E9F1]">4</span>
                 </div>
 
-                {/* Content */}
-                <h1 className="text-3xl font-bold text-gray-900 mb-3">Lost in Space?</h1>
+                {/* Message */}
+                <h1 className="text-2xl font-bold text-gray-900 mb-3">Page Not Found</h1>
                 <p className="text-gray-600 mb-8">The page you&apos;re looking for doesn&apos;t exist or has been moved.</p>
 
-                {/* Gradient Button */}
-                <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-[#412667] to-[#1AA367] text-white font-medium rounded-lg hover:shadow-lg transition-shadow">
-                    <ArrowLeft className="w-5 h-5" />
-                    Return to Safety
+                {/* Back to Home Button */}
+                <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-[#412667] text-white font-medium rounded-lg hover:bg-[#351A54] transition-colors">
+                    <Home className="w-5 h-5" />
+                    Back to Home
                 </Link>
 
-                {/* Decorative line */}
-                <div className="mt-12 relative">
-                    <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full w-1/3 bg-linear-to-r from-[#67E9F1] via-[#24E795] to-transparent animate-slide" />
-                    </div>
+                {/* Color dots at bottom */}
+                <div className="flex justify-center gap-3 mt-12">
+                    <div className="w-3 h-3 rounded-full bg-[#412667]"></div>
+                    <div className="w-3 h-3 rounded-full bg-[#1AA367]"></div>
+                    <div className="w-3 h-3 rounded-full bg-[#67E9F1]"></div>
+                    <div className="w-3 h-3 rounded-full bg-[#24E795]"></div>
                 </div>
-
-                {/* Add this CSS for animation */}
-                <style jsx>{`
-                    @keyframes slide {
-                        0% {
-                            transform: translateX(-100%);
-                        }
-                        100% {
-                            transform: translateX(300%);
-                        }
-                    }
-                    .animate-slide {
-                        animation: slide 2s linear infinite;
-                    }
-                `}</style>
             </div>
         </div>
     );
