@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -8,6 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <main className="w-full p-4">
                 {/* <SidebarTrigger /> */}
                 {children}
+                <RoleSwitcher />
             </main>
         </SidebarProvider>
     );
