@@ -159,7 +159,7 @@ const mockEvents: Event[] = [
 const ITEMS_PER_PAGE = 4;
 
 export default function EventsPage() {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [categoryFilter, setCategoryFilter] = useState("all");

@@ -5,6 +5,7 @@ import { Calendar, MapPin, Eye, TrendingUp, Radio } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { EditEventModal } from "./EditEvent";
+import Link from "next/link";
 
 interface Event {
     id: string;
@@ -105,13 +106,17 @@ export default function EventCard({ event }: { event: Event }) {
                     <Button onClick={() => setEditModalOpen(true)} variant="outline" size="sm" className="flex-1 text-foreground border-border hover:bg-muted bg-transparent py-2 h-auto cursor-pointer">
                         Edit
                     </Button>
-                    <Button variant="secondary" size="sm" className="flex-1 bg-foreground text-background hover:bg-foreground/90 py-2 h-auto cursor-pointer">
-                        Analytics
-                    </Button>
-                    <Button size="sm" className="flex-1 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2 py-2 h-auto cursor-pointer">
-                        <Radio />
-                        Go Live
-                    </Button>
+                    <Link href={`/my-events/analytics/${event.id}`} className="flex-1">
+                        <Button variant="secondary" size="sm" className="w-full bg-foreground text-background hover:bg-foreground/90 py-2 h-full cursor-pointer">
+                            Analytics
+                        </Button>
+                    </Link>
+                    <Link href={`/my-events/go-live/${event.id}`} className="flex-1">
+                        <Button size="sm" className="w-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2 py-2 h-full cursor-pointer">
+                            <Radio />
+                            Go Live
+                        </Button>
+                    </Link>
                 </div>
                 <EditEventModal open={editModalOpen} onOpenChange={setEditModalOpen} />
             </div>
