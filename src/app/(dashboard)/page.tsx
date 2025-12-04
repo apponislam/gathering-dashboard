@@ -8,6 +8,7 @@ import UserEngagementOverview from "@/components/dashboard/adminOverview/UserEng
 import { OrganizerDashboardOverview } from "@/components/dashboard/organizerOverview/OrganizerDashboardOverview";
 import { TopRevenueEvents } from "@/components/dashboard/organizerOverview/TopRevenueEvents";
 import { EventsByCategory } from "@/components/dashboard/organizerOverview/EventsByCategory";
+import OrganizerEventsPage from "@/components/dashboard/organizerOverview/OrganizerEventsPage";
 
 const Page = () => {
     const [role, setRole] = useState<string>("admin");
@@ -46,10 +47,11 @@ const Page = () => {
                 // Organizer Dashboard
                 <>
                     <OrganizerDashboardOverview></OrganizerDashboardOverview>
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 mb-4">
                         <TopRevenueEvents></TopRevenueEvents>
                         <EventsByCategory></EventsByCategory>
                     </div>
+                    <OrganizerEventsPage></OrganizerEventsPage>
                 </>
             )}
         </>

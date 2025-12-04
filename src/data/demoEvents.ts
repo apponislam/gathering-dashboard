@@ -9,7 +9,7 @@ export const EVENTS_DATA = [
     { id: 8, event: "Literary Workshop", category: "Literature", organizer: "Wordsmiths Guild", date: "2024-10-22", status: "Rejected" },
     { id: 9, event: "Design Summit", category: "Technology", organizer: "Design Collective", date: "2024-11-08", status: "Approved" },
     { id: 10, event: "Photography Walk", category: "Arts & Culture", organizer: "Photo Explorers", date: "2024-11-15", status: "Pending" },
-    { id: 11, event: "Comedy Night", category: "Entertainment", organizer: "Laugh Factory", date: "2024-12-01", status: "Approved" },
+    { id: 11, event: "Comedy Night", category: "Entertainment", organizer: "Laugh Factory", date: "2026-12-01", status: "Approved" },
     { id: 12, event: "Startup Pitch", category: "Business & Networking", organizer: "Innovation Hub", date: "2024-12-10", status: "Pending" },
 
     // New events

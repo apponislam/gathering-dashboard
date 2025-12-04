@@ -7,7 +7,7 @@ const data = [
     { name: "Conference", value: 0.75, color: "#8B5CF6" },
     { name: "Food & Drink", value: 0.5, color: "#A855F7" },
     { name: "Sports", value: 0.25, color: "#D946EF" },
-    { name: "Art", value: 0.0, color: "#EC4899" },
+    { name: "Art", value: 0.1, color: "#EC4899" },
 ];
 
 export function EventsByCategory() {
@@ -29,20 +29,23 @@ export function EventsByCategory() {
                         ))}
                     </div>
 
-                    {/* Bars */}
+                    {/* Bars - CORRECTED */}
                     <div className="ml-10 h-full flex items-end space-x-4">
                         {data.map((item, index) => (
-                            <div key={index} className="flex flex-col items-center flex-1 h-full">
-                                {/* Bar */}
-                                <div
-                                    className="w-12 rounded-t-lg relative group"
-                                    style={{
-                                        height: `${item.value * 100}%`,
-                                        backgroundColor: item.color,
-                                    }}
-                                >
-                                    {/* Value on hover */}
-                                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">{item.value.toFixed(2)}</div>
+                            <div key={index} className="flex flex-col items-center justify-end flex-1 h-full">
+                                {/* Bar container */}
+                                <div className="w-12 flex flex-col justify-end h-full">
+                                    {/* Bar */}
+                                    <div
+                                        className="w-12 rounded-t-lg relative group"
+                                        style={{
+                                            height: `${item.value * 100}%`,
+                                            backgroundColor: item.color,
+                                        }}
+                                    >
+                                        {/* Value on hover */}
+                                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">{item.value.toFixed(2)}</div>
+                                    </div>
                                 </div>
 
                                 {/* Category label */}

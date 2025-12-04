@@ -74,7 +74,7 @@ export const menuItems: Record<string, MenuItem[]> = {
         },
         {
             title: "Event",
-            url: "/organizer/events",
+            url: "/my-events",
             icon: Calendar,
         },
         {
