@@ -79,12 +79,12 @@ export const menuItems: Record<string, MenuItem[]> = {
         },
         {
             title: "Promotions",
-            url: "/organizer/promotions",
+            url: "/promotions",
             icon: Megaphone,
         },
         {
             title: "Messages",
-            url: "/organizer/messages",
+            url: "/messages",
             icon: MessageSquare,
         },
     ],
