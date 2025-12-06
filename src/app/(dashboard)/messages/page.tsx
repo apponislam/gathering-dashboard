@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface Message {
     id: string;
@@ -157,7 +158,10 @@ export default function MessagesPage() {
             <div className="w-full lg:w-80 border-r border-border bg-card flex flex-col h-1/2 lg:h-full">
                 {/* Header */}
                 <div className="border-b border-border p-4">
-                    <h1 className="text-xl font-bold text-foreground">Messages</h1>
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger className="md:hidden block" />
+                        <h1 className="text-xl font-bold text-foreground">Messages</h1>
+                    </div>
                     <p className="text-sm text-muted-foreground mt-1">Contact attendees</p>
                     <Badge className="mt-2" variant="secondary">
                         {unreadCount} unread

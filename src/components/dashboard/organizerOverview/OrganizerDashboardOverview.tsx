@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { TrendingUp, Users, Eye, DollarSign } from "lucide-react";
 
 export function OrganizerDashboardOverview() {
@@ -41,7 +42,10 @@ export function OrganizerDashboardOverview() {
         <div className="w-full mb-10">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="font-bold text-[#0D121C] text-2xl">Dashboard</h1>
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger className="md:hidden block" />
+                        <h1 className="font-bold text-[#0D121C] text-2xl">Dashboard</h1>
+                    </div>
                     <p className="text-[#64748B] mt-1">Monitor your events performance and key metrics</p>
                 </div>
             </div>

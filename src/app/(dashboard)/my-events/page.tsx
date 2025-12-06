@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search } from "lucide-react";
 import EventCard from "@/components/dashboard/my-events/EventCard";
 import { CreateEventModal } from "@/components/dashboard/my-events/CreateEvent";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface Event {
     id: string;
@@ -212,8 +213,12 @@ export default function EventsPage() {
         <main>
             <div className=" mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-2">
-                    <h1 className="text-4xl font-bold text-foreground">My Events</h1>
+                <div className="flex flex-col md:flex-row gap-2  md:items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger className="md:hidden block" />
+                        <h1 className="text-4xl font-bold text-foreground">My Events</h1>
+                    </div>
+
                     <Button onClick={() => setIsOpen(true)} className="bg-[#5C22BF] hover:bg-[#5C22BF] text-white gap-2">
                         <Plus className="w-4 h-4" />
                         Create Event
