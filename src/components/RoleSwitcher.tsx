@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { Users, User } from "lucide-react";
 import { useUserRole } from "@/lib/navigation/MenuItems";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 export function RoleSwitcher() {
     const { role, setUserRole } = useUserRole();
     const [showTooltip, setShowTooltip] = useState(false);
-    const router = useRouter();
+    // const router = useRouter();
 
     const toggleRole = () => {
         const newRole = role === "admin" ? "organizer" : "admin";
