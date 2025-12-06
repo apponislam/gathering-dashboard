@@ -13,8 +13,9 @@ export function RoleSwitcher() {
         const newRole = role === "admin" ? "organizer" : "admin";
         setUserRole(newRole);
         setTimeout(() => {
-            window.location.reload();
-            router.push("/");
+            window.location.href = "/";
+            // window.location.reload();
+            // router.push("/");
         }, 100);
     };
 
