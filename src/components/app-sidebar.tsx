@@ -15,7 +15,7 @@ export function AppSidebar() {
             <SidebarContent className="bg-white rounded-3xl m-5 shadow-[0_16px_44px_0_rgba(0,0,0,0.07)] md:mr-0 flex flex-col justify-between h-full mr-5">
                 <div>
                     <div className="p-6 pb-12 shrink-0 bg-white">
-                        <Link href={role === "admin" ? "/" : "/organizer"}>
+                        <Link href="/">
                             <Image src="/logo.svg" alt="Logo" width={138} height={32} />
                         </Link>
                     </div>
