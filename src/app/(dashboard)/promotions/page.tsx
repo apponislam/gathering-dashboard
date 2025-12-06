@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { CalendarDays, Copy, Tags, Zap } from "lucide-react";
 import { CreatePromotionModal } from "@/components/dashboard/promotions/PromotionModal";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function PromotionsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +19,10 @@ export default function PromotionsPage() {
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Promotions & Discounts</h1>
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger className="md:hidden block" />
+                        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Promotions & Discounts</h1>
+                    </div>
                     <p className="text-muted-foreground">Manage your events with ease</p>
                 </div>
 

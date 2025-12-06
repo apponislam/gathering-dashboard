@@ -1,3 +1,4 @@
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Users, Calendar, FilePlus, AlertCircle } from "lucide-react";
 
 export default function DashboardOverview() {
@@ -40,7 +41,10 @@ export default function DashboardOverview() {
         <div className="w-full mb-10">
             {/* Dashboard Title */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+                <div className="flex items-center gap-2">
+                    <SidebarTrigger className="md:hidden block" />
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+                </div>
                 <p className="text-gray-600 mt-2">Welcome back! Here&apos;s what&apos;s happening with Gathering today</p>
             </div>
 

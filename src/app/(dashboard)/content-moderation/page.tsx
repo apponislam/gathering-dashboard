@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { mockReports } from "@/data/demoContent";
 import ReviewReportedContent from "@/components/dashboard/content/ContentReviewModal";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -37,7 +38,10 @@ export default function ModerationPage() {
         <main className="flex flex-col gap-8">
             {/* Header */}
             <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight">Content Moderation</h1>
+                <div className="flex items-center gap-2">
+                    <SidebarTrigger className="md:hidden block" />
+                    <h1 className="text-3xl font-bold tracking-tight">Content Moderation</h1>
+                </div>
                 <p className="text-[#4D5999]">Review and moderate reported content</p>
             </div>
 

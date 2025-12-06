@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"; // Assuming you have an Input component
 import { EVENTS_DATA } from "@/data/demoEvents";
 import Link from "next/link";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -84,7 +85,10 @@ export default function Page() {
         <div className="">
             <div className="">
                 {/* Header */}
-                <h1 className="text-3xl font-bold mb-6">Events</h1>
+                <div className="flex items-center gap-2 mb-6">
+                    <SidebarTrigger className="md:hidden block" />
+                    <h1 className="text-3xl font-bold ">Events</h1>
+                </div>
 
                 {/* Filters */}
                 <div className="flex flex-wrap gap-3 mb-6">

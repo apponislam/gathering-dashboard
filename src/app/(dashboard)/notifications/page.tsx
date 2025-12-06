@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -178,7 +179,10 @@ export default function NotificationsComponent() {
     return (
         <div>
             <div>
-                <h1 className="text-3xl font-bold mb-8">Notifications</h1>
+                <div className="flex items-center gap-2 mb-8">
+                    <SidebarTrigger className="md:hidden block" />
+                    <h1 className="text-3xl font-bold ">Notifications</h1>
+                </div>
             </div>
 
             {/* Create Notification Form */}

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { IUser, MOCK_USERS } from "@/data/demoUsers";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -82,7 +83,10 @@ export default function Page() {
             <div className="">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-foreground mb-6">User Management</h1>
+                    <div className="flex items-center gap-2 mb-6">
+                        <SidebarTrigger className="md:hidden block" />
+                        <h1 className="text-3xl md:text-4xl font-bold text-foreground ">User Management</h1>
+                    </div>
 
                     {/* Search and Filters */}
 
