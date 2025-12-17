@@ -9,7 +9,7 @@ interface NonAuthenticatedGuardProps {
     redirectTo?: string;
 }
 
-const NonAuthenticatedGuard = ({ children, redirectTo = "/dashboard" }: NonAuthenticatedGuardProps) => {
+const NonAuthenticatedGuard = ({ children, redirectTo = "/" }: NonAuthenticatedGuardProps) => {
     const router = useRouter();
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
     const accessToken = useAppSelector(selectAccessToken);
@@ -21,15 +21,12 @@ const NonAuthenticatedGuard = ({ children, redirectTo = "/dashboard" }: NonAuthe
 
         const checkAuth = () => {
             if (isAuthenticated && accessToken) {
-                // User IS authenticated → redirect to home/dashboard
                 router.push(redirectTo);
             } else if (isMounted) {
-                // Only update state if component is still mounted
                 setIsChecking(false);
             }
         };
 
-        // Use setTimeout to make it asynchronous
         const timer = setTimeout(checkAuth, 0);
 
         return () => {
@@ -38,7 +35,6 @@ const NonAuthenticatedGuard = ({ children, redirectTo = "/dashboard" }: NonAuthe
         };
     }, [isAuthenticated, accessToken, router, redirectTo]);
 
-    // Show loading while checking
     if (isChecking) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -47,7 +43,6 @@ const NonAuthenticatedGuard = ({ children, redirectTo = "/dashboard" }: NonAuthe
         );
     }
 
-    // Render children only if user is NOT authenticated
     if (!isAuthenticated || !accessToken) {
         return <>{children}</>;
     }
