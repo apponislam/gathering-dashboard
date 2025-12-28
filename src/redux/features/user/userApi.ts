@@ -70,6 +70,16 @@ export const userApi = baseApi.injectEndpoints({
             providesTags: (result, error, id) => [{ type: "User", id }],
         }),
 
+        // Get current user profile
+        getUserProfile: builder.query<SingleUserResponse, void>({
+            query: () => ({
+                url: "/user/profile",
+                method: "GET",
+                credentials: "include",
+            }),
+            providesTags: ["UserProfile"],
+        }),
+
         // Update user status
         updateUserStatus: builder.mutation<SingleUserResponse, UpdateUserStatusRequest>({
             query: ({ id, status }) => {
@@ -87,4 +97,4 @@ export const userApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useGetUsersQuery, useGetUserByIdQuery, useUpdateUserStatusMutation } = userApi;
+export const { useGetUsersQuery, useGetUserByIdQuery, useGetUserProfileQuery, useUpdateUserStatusMutation } = userApi;

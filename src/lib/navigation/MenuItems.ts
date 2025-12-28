@@ -30,7 +30,7 @@
 
 "use client";
 import { LayoutDashboard, Users, Calendar, FileText, Bell, Megaphone, MessageSquare } from "lucide-react";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
 export interface MenuItem {
     title: string;
@@ -40,6 +40,33 @@ export interface MenuItem {
 
 export const menuItems: Record<string, MenuItem[]> = {
     admin: [
+        {
+            title: "Dashboard",
+            url: "/",
+            icon: LayoutDashboard,
+        },
+        {
+            title: "User Management",
+            url: "/users-management",
+            icon: Users,
+        },
+        {
+            title: "Event Management",
+            url: "/events-management",
+            icon: Calendar,
+        },
+        {
+            title: "Content Moderation",
+            url: "/content-moderation",
+            icon: FileText,
+        },
+        {
+            title: "Notifications",
+            url: "/notifications",
+            icon: Bell,
+        },
+    ],
+    super_admin: [
         {
             title: "Dashboard",
             url: "/",
@@ -90,30 +117,30 @@ export const menuItems: Record<string, MenuItem[]> = {
     ],
 };
 
-export const useUserRole = () => {
-    const [role, setRole] = useState<string>("admin");
+// export const useUserRole = () => {
+//     const [role, setRole] = useState<string>("admin");
 
-    useEffect(() => {
-        const savedRole = localStorage.getItem("userRole");
-        if (savedRole) {
-            const timer = setTimeout(() => {
-                setRole(savedRole);
-            }, 0);
-            return () => clearTimeout(timer);
-        }
-    }, []);
+//     useEffect(() => {
+//         const savedRole = localStorage.getItem("userRole");
+//         if (savedRole) {
+//             const timer = setTimeout(() => {
+//                 setRole(savedRole);
+//             }, 0);
+//             return () => clearTimeout(timer);
+//         }
+//     }, []);
 
-    const setUserRole = (newRole: string) => {
-        setRole(newRole);
-        localStorage.setItem("userRole", newRole);
-    };
+//     const setUserRole = (newRole: string) => {
+//         setRole(newRole);
+//         localStorage.setItem("userRole", newRole);
+//     };
 
-    return { role, setUserRole };
-};
+//     return { role, setUserRole };
+// };
 
-export const getDefaultRole = (): string => {
-    if (typeof window !== "undefined") {
-        return localStorage.getItem("userRole") || "admin";
-    }
-    return "admin";
-};
+// export const getDefaultRole = (): string => {
+//     if (typeof window !== "undefined") {
+//         return localStorage.getItem("userRole") || "admin";
+//     }
+//     return "admin";
+// };
