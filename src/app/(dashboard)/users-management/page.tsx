@@ -316,7 +316,7 @@ interface LocalUser {
     id: string;
     name: string;
     email: string;
-    role: "User" | "organizer" | "Admin";
+    role: "User" | "organizer" | "Admin" | "super_admin";
     status: USER_STATUS;
     eventsCreated: number;
     joinDate: string;
@@ -338,10 +338,11 @@ function StatusBadge({ status }: { status: USER_STATUS }) {
     return <Badge className={variants[status]}>{statusLabels[status]}</Badge>;
 }
 
-function RoleBadge({ role }: { role: "User" | "organizer" | "Admin" | "user" | "organizer" | "admin" }) {
+function RoleBadge({ role }: { role: "User" | "organizer" | "Admin" | "user" | "organizer" | "admin" | "super_admin" }) {
     const roleMap = {
         user: "User",
         admin: "Admin",
+        super_admin: "super_admin",
     } as const;
 
     const displayRole = role in roleMap ? roleMap[role as keyof typeof roleMap] : role;
@@ -352,6 +353,7 @@ function RoleBadge({ role }: { role: "User" | "organizer" | "Admin" | "user" | "
         Admin: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
         user: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
         admin: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+        super_admin: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
     };
 
     return (
@@ -363,11 +365,11 @@ function RoleBadge({ role }: { role: "User" | "organizer" | "Admin" | "user" | "
 
 // Convert API user to local user format
 const convertApiUserToLocal = (apiUser: ApiUser): LocalUser => {
-    // Map role from API to UI role
-    const roleMap: Record<string, "User" | "organizer" | "Admin"> = {
+    const roleMap: Record<string, "User" | "organizer" | "Admin" | "super_admin"> = {
         user: "User",
         organizer: "organizer",
         admin: "Admin",
+        super_admin: "super_admin",
     };
 
     // Format date
@@ -601,6 +603,7 @@ export default function Page() {
                                 <SelectItem value="user">Users</SelectItem>
                                 <SelectItem value="organizer">Organizers</SelectItem>
                                 <SelectItem value="admin">Admins</SelectItem>
+                                <SelectItem value="super_admin">Super Admins</SelectItem>
                             </SelectContent>
                         </Select>
 

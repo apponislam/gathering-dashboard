@@ -2,13 +2,30 @@
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { menuItems, useUserRole } from "@/lib/navigation/MenuItems";
+import { usePathname, useRouter } from "next/navigation";
+import { menuItems } from "@/lib/navigation/MenuItems";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { logout, selectRole } from "@/redux/features/auth/authSlice";
+import { useGetUserProfileQuery } from "@/redux/features/user/userApi";
+import { getImageUrl } from "@/utils/imageUrl";
+import { baseApi } from "@/redux/api/baseApi";
 
 export function AppSidebar() {
     const pathname = usePathname();
-    const { role } = useUserRole();
-    const items = menuItems[role];
+    const role = useAppSelector(selectRole);
+    console.log(role);
+    const items = role ? menuItems[role] : [];
+    const router = useRouter();
+    const dispatch = useAppDispatch();
+    const { data: myProfile } = useGetUserProfileQuery();
+    console.log(myProfile);
+
+    const handleLogout = () => {
+        dispatch(logout());
+        dispatch(baseApi.util.resetApiState());
+        router.push("/auth/login");
+        router.refresh();
+    };
 
     return (
         <Sidebar className="border-none">
@@ -45,11 +62,7 @@ export function AppSidebar() {
                         <SidebarMenu>
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
-                                    <button
-                                        onClick={() => console.log("Logging out...")}
-                                        className="flex items-center justify-center gap-3 px-4 py-3 h-auto rounded-full! transition-colors duration-200 
-                                         bg-[#4F46E5] text-center text-white hover:bg-[#4F46E5]! hover:text-white! w-full cursor-pointer"
-                                    >
+                                    <button onClick={handleLogout} className="flex items-center justify-center gap-3 px-4 py-3 h-auto rounded-full! transition-colors duration-200 bg-[#4F46E5] text-center text-white hover:bg-[#4F46E5]! hover:text-white! w-full cursor-pointer">
                                         <span className="font-medium">Logout</span>
                                     </button>
                                 </SidebarMenuButton>
@@ -57,10 +70,10 @@ export function AppSidebar() {
                         </SidebarMenu>
                     </div>
                     <div className="border-t border-[#E2E8F0] p-4 flex items-center gap-3">
-                        <Image src="/avatar.png" alt="Avatar" width={40} height={40}></Image>
+                        <Image src={getImageUrl(myProfile?.data?.profile) || "/avatar.png"} alt="Profile" width={40} height={40} className="rounded-full object-cover w-10 h-10" />
                         <div>
-                            <h1 className="font-medium text-[#64748B] text-[12px]">{role === "admin" ? "admin@gathering.app" : "organizer@gathering.app"}</h1>
-                            <p className="font-medium text-sm">{role === "admin" ? "Admin" : "Organizer"}</p>
+                            <h1 className="font-medium text-[#64748B] text-[12px]">{myProfile?.data?.email || "example@gmail.com"}</h1>
+                            <p className="font-medium text-sm">{myProfile?.data?.role || "ROLE"}</p>
                         </div>
                     </div>
                 </div>

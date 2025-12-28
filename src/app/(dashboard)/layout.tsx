@@ -1,5 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { RoleSwitcher } from "@/components/RoleSwitcher";
+// import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AuthenticatedGuard from "@/Provider/AuthenticatedGuard";
 
@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <AppSidebar />
                 <main className="w-full p-4">
                     {children}
-                    <RoleSwitcher />
+                    {/* <RoleSwitcher /> */}
                 </main>
             </SidebarProvider>
         </AuthenticatedGuard>

@@ -4,7 +4,7 @@ import Image from "next/image";
 const page = () => {
     return (
         <div className="min-h-screen flex">
-            <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+            <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-8 bg-gray-50">
                 <ResetPassword_Form />
             </div>
             <div className="hidden md:block md:w-1/2 relative">

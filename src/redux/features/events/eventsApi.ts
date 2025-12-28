@@ -65,11 +65,9 @@ export const eventsApi = baseApi.injectEndpoints({
             query: (params) => {
                 const queryParams: Record<string, any> = {};
 
-                // Always include pagination with defaults
                 queryParams.page = params.page || 1;
                 queryParams.limit = params.limit || 10;
 
-                // Include optional params only if they have values
                 if (params.category) queryParams.category = params.category;
                 if (params.status) queryParams.status = params.status;
                 if (params.startDate) queryParams.startDate = params.startDate;
@@ -86,6 +84,30 @@ export const eventsApi = baseApi.injectEndpoints({
             providesTags: ["Event"],
         }),
 
+        // Get my events (organized by the current user)
+        getMyEvents: builder.query<EventResponse, EventQueryParams>({
+            query: (params) => {
+                const queryParams: Record<string, any> = {};
+
+                queryParams.page = params.page || 1;
+                queryParams.limit = params.limit || 10;
+
+                if (params.category) queryParams.category = params.category;
+                if (params.status) queryParams.status = params.status;
+                if (params.startDate) queryParams.startDate = params.startDate;
+                if (params.endDate) queryParams.endDate = params.endDate;
+                if (params.searchTerm) queryParams.searchTerm = params.searchTerm;
+
+                return {
+                    url: "/event/my-events",
+                    method: "GET",
+                    params: queryParams,
+                    credentials: "include",
+                };
+            },
+            providesTags: ["MyEvent"],
+        }),
+
         getEventById: builder.query<SingleEventResponse, string>({
             query: (id) => ({
                 url: `/event/${id}`,
@@ -94,7 +116,49 @@ export const eventsApi = baseApi.injectEndpoints({
             }),
             providesTags: (result, error, id) => [{ type: "Event", id }],
         }),
+
+        // Create a new event
+        createEvent: builder.mutation<SingleEventResponse, FormData>({
+            query: (formData) => ({
+                url: "/event",
+                method: "POST",
+                body: formData,
+                credentials: "include",
+            }),
+            invalidatesTags: ["Event", "MyEvent"],
+        }),
+
+        // Update event
+        updateEvent: builder.mutation<SingleEventResponse, { id: string; data: any }>({
+            query: ({ id, data }) => ({
+                url: `/event/${id}`,
+                method: "PATCH",
+                body: data,
+                credentials: "include",
+            }),
+            invalidatesTags: (result, error, { id }) => ["Event", "MyEvent", { type: "Event", id }],
+        }),
+
+        // Delete event
+        deleteEvent: builder.mutation<SingleEventResponse, string>({
+            query: (id) => ({
+                url: `/event/${id}`,
+                method: "DELETE",
+                credentials: "include",
+            }),
+            invalidatesTags: ["Event", "MyEvent"],
+        }),
+
+        // Get nearby events
+        getNearbyEvents: builder.mutation<EventResponse, { lat: number; lng: number; distance?: number }>({
+            query: (data) => ({
+                url: "/event/nearby",
+                method: "POST",
+                body: data,
+                credentials: "include",
+            }),
+        }),
     }),
 });
 
-export const { useGetEventsQuery, useGetEventByIdQuery } = eventsApi;
+export const { useGetEventsQuery, useGetMyEventsQuery, useGetEventByIdQuery, useCreateEventMutation, useUpdateEventMutation, useDeleteEventMutation, useGetNearbyEventsMutation } = eventsApi;
