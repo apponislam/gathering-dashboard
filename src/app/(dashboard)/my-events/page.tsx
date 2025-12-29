@@ -8,154 +8,7 @@
 // import EventCard from "@/components/dashboard/my-events/EventCard";
 // import { CreateEventModal } from "@/components/dashboard/my-events/CreateEvent";
 // import { SidebarTrigger } from "@/components/ui/sidebar";
-
-// interface Event {
-//     id: string;
-//     title: string;
-//     category: string;
-//     description: string;
-//     date: string;
-//     time: string;
-//     location: string;
-//     sold: number;
-//     total: number;
-//     revenue: number;
-//     views: number;
-//     engagement: number;
-//     image: string;
-//     status: string;
-// }
-
-// const mockEvents: Event[] = [
-//     {
-//         id: "1",
-//         title: "Tech Conference 20",
-//         category: "Conference",
-//         description: "Annual technology conference featuring keynotes from industry leaders, workshops, and networking opportunities.",
-//         date: "8/22/2025",
-//         time: "09:00",
-//         location: "Convention Center, San Francisco",
-//         sold: 1650,
-//         total: 2000,
-//         revenue: 493350,
-//         views: 8920,
-//         engagement: 72,
-//         image: "/eventpicture.png",
-//         status: "published",
-//     },
-//     {
-//         id: "2",
-//         title: "Tech Conference 20",
-//         category: "Conference",
-//         description: "Annual technology conference featuring keynotes from industry leaders, workshops, and networking opportunities.",
-//         date: "8/22/2025",
-//         time: "09:00",
-//         location: "Convention Center, San Francisco",
-//         sold: 1650,
-//         total: 2000,
-//         revenue: 493350,
-//         views: 8920,
-//         engagement: 72,
-//         image: "/eventpicture.png",
-//         status: "published",
-//     },
-//     {
-//         id: "3",
-//         title: "Tech Conference 20",
-//         category: "Conference",
-//         description: "Annual technology conference featuring keynotes from industry leaders, workshops, and networking opportunities.",
-//         date: "8/22/2025",
-//         time: "09:00",
-//         location: "Convention Center, San Francisco",
-//         sold: 1650,
-//         total: 2000,
-//         revenue: 493350,
-//         views: 8920,
-//         engagement: 72,
-//         image: "/eventpicture.png",
-//         status: "draft",
-//     },
-//     {
-//         id: "4",
-//         title: "Tech Conference 20",
-//         category: "Conference",
-//         description: "Annual technology conference featuring keynotes from industry leaders, workshops, and networking opportunities.",
-//         date: "8/22/2025",
-//         time: "09:00",
-//         location: "Convention Center, San Francisco",
-//         sold: 1650,
-//         total: 2000,
-//         revenue: 493350,
-//         views: 8920,
-//         engagement: 72,
-//         image: "/eventpicture.png",
-//         status: "published",
-//     },
-//     {
-//         id: "5",
-//         title: "Tech Conference 20",
-//         category: "Conference",
-//         description: "Annual technology conference featuring keynotes from industry leaders, workshops, and networking opportunities.",
-//         date: "8/22/2025",
-//         time: "09:00",
-//         location: "Convention Center, San Francisco",
-//         sold: 1650,
-//         total: 2000,
-//         revenue: 493350,
-//         views: 8920,
-//         engagement: 72,
-//         image: "/eventpicture.png",
-//         status: "published",
-//     },
-//     {
-//         id: "6",
-//         title: "Tech Conference 20",
-//         category: "Conference",
-//         description: "Annual technology conference featuring keynotes from industry leaders, workshops, and networking opportunities.",
-//         date: "8/22/2025",
-//         time: "09:00",
-//         location: "Convention Center, San Francisco",
-//         sold: 1650,
-//         total: 2000,
-//         revenue: 493350,
-//         views: 8920,
-//         engagement: 72,
-//         image: "/eventpicture.png",
-//         status: "published",
-//     },
-//     {
-//         id: "7",
-//         title: "Tech Conference 20",
-//         category: "Conference",
-//         description: "Annual technology conference featuring keynotes from industry leaders, workshops, and networking opportunities.",
-//         date: "8/22/2025",
-//         time: "09:00",
-//         location: "Convention Center, San Francisco",
-//         sold: 1650,
-//         total: 2000,
-//         revenue: 493350,
-//         views: 8920,
-//         engagement: 72,
-//         image: "/eventpicture.png",
-//         status: "published",
-//     },
-//     {
-//         id: "8",
-//         title: "Tech Conference 20",
-//         category: "Conference",
-//         description: "Annual technology conference featuring keynotes from industry leaders, workshops, and networking opportunities.",
-//         date: "8/22/2025",
-//         time: "09:00",
-//         location: "Convention Center, San Francisco",
-//         sold: 1650,
-//         total: 2000,
-//         revenue: 493350,
-//         views: 8920,
-//         engagement: 72,
-//         image: "/eventpicture.png",
-//         status: "published",
-//     },
-// ];
+// import { useGetMyEventsQuery, EVENT_STATUS, EVENT_CATEGORIES } from "@/redux/features/events/eventsApi";
 
 // const ITEMS_PER_PAGE = 4;
 
@@ -166,19 +19,79 @@
 //     const [categoryFilter, setCategoryFilter] = useState("all");
 //     const [currentPage, setCurrentPage] = useState(1);
 
-//     const filteredEvents = useMemo(() => {
-//         return mockEvents.filter((event) => {
-//             const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase());
-//             const matchesStatus = statusFilter === "all" || event.status === statusFilter;
-//             const matchesCategory = categoryFilter === "all" || event.category === categoryFilter;
+//     // Fetch events from API
+//     const {
+//         data: eventsData,
+//         isLoading,
+//         isError,
+//         refetch,
+//     } = useGetMyEventsQuery({
+//         page: currentPage,
+//         limit: ITEMS_PER_PAGE,
+//         searchTerm: searchTerm || undefined,
+//         status: statusFilter !== "all" ? (statusFilter as EVENT_STATUS) : undefined,
+//         category: categoryFilter !== "all" ? categoryFilter : undefined,
+//     });
 
-//             return matchesSearch && matchesStatus && matchesCategory;
-//         });
-//     }, [searchTerm, statusFilter, categoryFilter]);
+//     console.log(eventsData);
 
-//     const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
-//     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-//     const paginatedEvents = filteredEvents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+//     // Transform API data for EventCard - USING REAL DATA
+//     const transformEventData = (apiEvent: any) => {
+//         // Format date from "2026-12-25" to "8/22/2025" format
+//         const formatDate = (dateString: string) => {
+//             const date = new Date(dateString);
+//             return date.toLocaleDateString("en-US", {
+//                 month: "numeric",
+//                 day: "numeric",
+//                 year: "numeric",
+//             });
+//         };
+
+//         // Calculate revenue from REAL data
+//         const revenue = apiEvent.ticketsSold * apiEvent.ticketPrice;
+
+//         // Calculate engagement from REAL data (favorites vs views)
+//         const engagement = apiEvent.views > 0 ? Math.round((apiEvent.favorites / apiEvent.views) * 100) : 0;
+
+//         // Map status - Use REAL API status
+//         let displayStatus = apiEvent.status;
+//         // Format for UI if needed
+//         if (apiEvent.status === EVENT_STATUS.APPROVED) {
+//             displayStatus = "published";
+//         } else if (apiEvent.status === EVENT_STATUS.PENDING) {
+//             displayStatus = "draft";
+//         }
+
+//         // Format category from REAL data
+//         const category = apiEvent.category ? apiEvent.category.charAt(0).toUpperCase() + apiEvent.category.slice(1) : "Other";
+
+//         return {
+//             id: apiEvent._id,
+//             title: apiEvent.title,
+//             category: category,
+//             description: apiEvent.description,
+//             date: formatDate(apiEvent.startDate),
+//             time: apiEvent.startTime,
+//             location: apiEvent.address,
+//             sold: apiEvent.ticketsSold, // REAL sold tickets
+//             total: apiEvent.capacity, // REAL capacity
+//             revenue: revenue, // REAL calculated revenue
+//             views: apiEvent.views, // REAL views
+//             engagement: engagement, // REAL calculated engagement
+//             image: apiEvent.images?.[0] || "", // REAL image or empty string
+//             status: displayStatus, // REAL status (mapped for UI)
+//         };
+//     };
+
+//     const events = useMemo(() => {
+//         if (!eventsData?.data?.data) return [];
+//         return eventsData.data.data.map(transformEventData);
+//     }, [eventsData]);
+//     console.log(events);
+
+//     const meta = eventsData?.data?.meta;
+//     const totalEvents = meta?.total || 0;
+//     const totalPages = meta?.totalPages || 1;
 
 //     // Generate page numbers (same as your admin page - max 5 pages)
 //     const pageNumbers = useMemo(() => {
@@ -209,11 +122,58 @@
 //         callback();
 //     };
 
+//     if (isLoading) {
+//         return (
+//             <main>
+//                 <div className="mx-auto">
+//                     <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between mb-2">
+//                         <div className="flex items-center gap-2">
+//                             <SidebarTrigger className="md:hidden block" />
+//                             <h1 className="text-4xl font-bold text-foreground">My Events</h1>
+//                         </div>
+//                         <Button className="bg-[#5C22BF] hover:bg-[#5C22BF] text-white gap-2">
+//                             <Plus className="w-4 h-4" />
+//                             Create Event
+//                         </Button>
+//                     </div>
+//                     <div className="text-center py-12">
+//                         <p className="text-muted-foreground">Loading events...</p>
+//                     </div>
+//                 </div>
+//             </main>
+//         );
+//     }
+
+//     if (isError) {
+//         return (
+//             <main>
+//                 <div className="mx-auto">
+//                     <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between mb-2">
+//                         <div className="flex items-center gap-2">
+//                             <SidebarTrigger className="md:hidden block" />
+//                             <h1 className="text-4xl font-bold text-foreground">My Events</h1>
+//                         </div>
+//                         <Button className="bg-[#5C22BF] hover:bg-[#5C22BF] text-white gap-2">
+//                             <Plus className="w-4 h-4" />
+//                             Create Event
+//                         </Button>
+//                     </div>
+//                     <div className="text-center py-12">
+//                         <p className=" text-red-500">Error loading events. Please try again.</p>
+//                         <Button onClick={() => refetch()} variant="outline" className="mt-4">
+//                             Retry
+//                         </Button>
+//                     </div>
+//                 </div>
+//             </main>
+//         );
+//     }
+
 //     return (
 //         <main>
-//             <div className=" mx-auto">
+//             <div className="mx-auto">
 //                 {/* Header */}
-//                 <div className="flex flex-col md:flex-row gap-2  md:items-center justify-between mb-2">
+//                 <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between mb-2">
 //                     <div className="flex items-center gap-2">
 //                         <SidebarTrigger className="md:hidden block" />
 //                         <h1 className="text-4xl font-bold text-foreground">My Events</h1>
@@ -229,7 +189,7 @@
 //                 {/* Event count */}
 //                 <div className="text-muted-foreground mb-8">
 //                     <p className="text-sm">
-//                         total <span className="font-bold">{filteredEvents.length}</span> events
+//                         total <span className="font-bold">{totalEvents}</span> events
 //                     </p>
 //                 </div>
 
@@ -251,8 +211,11 @@
 //                         </SelectTrigger>
 //                         <SelectContent>
 //                             <SelectItem value="all">All Status</SelectItem>
-//                             <SelectItem value="published">Published</SelectItem>
-//                             <SelectItem value="draft">Draft</SelectItem>
+//                             {Object.values(EVENT_STATUS).map((status) => (
+//                                 <SelectItem key={status} value={status}>
+//                                     {status.charAt(0).toUpperCase() + status.slice(1)}
+//                                 </SelectItem>
+//                             ))}
 //                         </SelectContent>
 //                     </Select>
 
@@ -263,21 +226,31 @@
 //                         }}
 //                     >
 //                         <SelectTrigger className="w-full md:w-40 bg-[#F3F3F5] border-border">
-//                             <SelectValue placeholder="All Categorie" />
+//                             <SelectValue placeholder="All Categories" />
 //                         </SelectTrigger>
 //                         <SelectContent>
-//                             <SelectItem value="all">All Categorie</SelectItem>
-//                             <SelectItem value="Conference">Conference</SelectItem>
-//                             <SelectItem value="Workshop">Workshop</SelectItem>
-//                             <SelectItem value="Webinar">Webinar</SelectItem>
+//                             <SelectItem value="all">All Categories</SelectItem>
+//                             {Object.values(EVENT_CATEGORIES).map((category) => {
+//                                 // Format the category for display (e.g., "food_drink" → "Food Drink")
+//                                 const formattedCategory = category
+//                                     .split("_")
+//                                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+//                                     .join(" ");
+
+//                                 return (
+//                                     <SelectItem key={category} value={category}>
+//                                         {formattedCategory}
+//                                     </SelectItem>
+//                                 );
+//                             })}
 //                         </SelectContent>
 //                     </Select>
 //                 </div>
 
 //                 {/* Events Grid */}
 //                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-//                     {paginatedEvents.length > 0 ? (
-//                         paginatedEvents.map((event) => <EventCard key={event.id} event={event} />)
+//                     {events.length > 0 ? (
+//                         events.map((event: any) => <EventCard key={event.id} event={event} />)
 //                     ) : (
 //                         <div className="col-span-full text-center py-12">
 //                             <p className="text-muted-foreground">No events found</p>
@@ -288,7 +261,7 @@
 //                 {/* Pagination - EXACT SAME as your admin page */}
 //                 <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 //                     <div className="text-sm text-muted-foreground">
-//                         Showing {paginatedEvents.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredEvents.length)} of {filteredEvents.length} events
+//                         Showing {events.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to {Math.min(currentPage * ITEMS_PER_PAGE, totalEvents)} of {totalEvents} events
 //                     </div>
 //                     <div className="flex flex-wrap gap-2">
 //                         <Button variant="outline" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
@@ -319,7 +292,7 @@ import { Plus, Search } from "lucide-react";
 import EventCard from "@/components/dashboard/my-events/EventCard";
 import { CreateEventModal } from "@/components/dashboard/my-events/CreateEvent";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useGetMyEventsQuery, EVENT_STATUS } from "@/redux/features/events/eventsApi";
+import { useGetMyEventsQuery, EVENT_STATUS, EVENT_CATEGORIES } from "@/redux/features/events/eventsApi";
 
 const ITEMS_PER_PAGE = 4;
 
@@ -344,65 +317,19 @@ export default function EventsPage() {
         category: categoryFilter !== "all" ? categoryFilter : undefined,
     });
 
-    // Transform API data for EventCard - USING REAL DATA
-    const transformEventData = (apiEvent: any) => {
-        // Format date from "2026-12-25" to "8/22/2025" format
-        const formatDate = (dateString: string) => {
-            const date = new Date(dateString);
-            return date.toLocaleDateString("en-US", {
-                month: "numeric",
-                day: "numeric",
-                year: "numeric",
-            });
-        };
+    console.log("API Response:", eventsData);
 
-        // Calculate revenue from REAL data
-        const revenue = apiEvent.ticketsSold * apiEvent.ticketPrice;
-
-        // Calculate engagement from REAL data (favorites vs views)
-        const engagement = apiEvent.views > 0 ? Math.round((apiEvent.favorites / apiEvent.views) * 100) : 0;
-
-        // Map status - Use REAL API status
-        let displayStatus = apiEvent.status;
-        // Format for UI if needed
-        if (apiEvent.status === EVENT_STATUS.APPROVED) {
-            displayStatus = "published";
-        } else if (apiEvent.status === EVENT_STATUS.PENDING) {
-            displayStatus = "draft";
-        }
-
-        // Format category from REAL data
-        const category = apiEvent.category ? apiEvent.category.charAt(0).toUpperCase() + apiEvent.category.slice(1) : "Other";
-
-        return {
-            id: apiEvent._id,
-            title: apiEvent.title,
-            category: category,
-            description: apiEvent.description,
-            date: formatDate(apiEvent.startDate),
-            time: apiEvent.startTime,
-            location: apiEvent.address,
-            sold: apiEvent.ticketsSold, // REAL sold tickets
-            total: apiEvent.capacity, // REAL capacity
-            revenue: revenue, // REAL calculated revenue
-            views: apiEvent.views, // REAL views
-            engagement: engagement, // REAL calculated engagement
-            image: apiEvent.images?.[0] || "", // REAL image or empty string
-            status: displayStatus, // REAL status (mapped for UI)
-        };
-    };
-
+    // Send raw API data to EventCard - NO TRANSFORMATION HERE
     const events = useMemo(() => {
         if (!eventsData?.data?.data) return [];
-        return eventsData.data.data.map(transformEventData);
+        return eventsData.data.data; // Send raw API data
     }, [eventsData]);
-    console.log(events);
 
     const meta = eventsData?.data?.meta;
     const totalEvents = meta?.total || 0;
     const totalPages = meta?.totalPages || 1;
 
-    // Generate page numbers (same as your admin page - max 5 pages)
+    // Generate page numbers
     const pageNumbers = useMemo(() => {
         const pages = [];
         const maxPages = 5;
@@ -430,35 +357,6 @@ export default function EventsPage() {
         setCurrentPage(1);
         callback();
     };
-
-    // Get unique categories from REAL data for filter dropdown
-    const availableCategories = useMemo(() => {
-        if (!eventsData?.data?.data) return [];
-        const categories = new Set<string>();
-        eventsData.data.data.forEach((event: any) => {
-            if (event.category) {
-                const formattedCategory = event.category.charAt(0).toUpperCase() + event.category.slice(1);
-                categories.add(formattedCategory);
-            }
-        });
-        return Array.from(categories);
-    }, [eventsData]);
-
-    // Get unique statuses from REAL data for filter dropdown
-    const availableStatuses = useMemo(() => {
-        if (!eventsData?.data?.data) return [];
-        const statuses = new Set<string>();
-        eventsData.data.data.forEach((event: any) => {
-            let displayStatus = event.status;
-            if (event.status === EVENT_STATUS.APPROVED) {
-                displayStatus = "published";
-            } else if (event.status === EVENT_STATUS.PENDING) {
-                displayStatus = "draft";
-            }
-            statuses.add(displayStatus);
-        });
-        return Array.from(statuses);
-    }, [eventsData]);
 
     if (isLoading) {
         return (
@@ -549,7 +447,7 @@ export default function EventsPage() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Status</SelectItem>
-                            {availableStatuses.map((status) => (
+                            {Object.values(EVENT_STATUS).map((status) => (
                                 <SelectItem key={status} value={status}>
                                     {status.charAt(0).toUpperCase() + status.slice(1)}
                                 </SelectItem>
@@ -568,19 +466,27 @@ export default function EventsPage() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Categories</SelectItem>
-                            {availableCategories.map((category) => (
-                                <SelectItem key={category} value={category}>
-                                    {category}
-                                </SelectItem>
-                            ))}
+                            {Object.values(EVENT_CATEGORIES).map((category) => {
+                                // Format the category for display (e.g., "food_drink" → "Food Drink")
+                                const formattedCategory = category
+                                    .split("_")
+                                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                    .join(" ");
+
+                                return (
+                                    <SelectItem key={category} value={category}>
+                                        {formattedCategory}
+                                    </SelectItem>
+                                );
+                            })}
                         </SelectContent>
                     </Select>
                 </div>
 
-                {/* Events Grid */}
+                {/* Events Grid - SEND RAW API DATA */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     {events.length > 0 ? (
-                        events.map((event: any) => <EventCard key={event.id} event={event} />)
+                        events.map((event: any) => <EventCard key={event._id} event={event} />)
                     ) : (
                         <div className="col-span-full text-center py-12">
                             <p className="text-muted-foreground">No events found</p>
@@ -588,7 +494,7 @@ export default function EventsPage() {
                     )}
                 </div>
 
-                {/* Pagination - EXACT SAME as your admin page */}
+                {/* Pagination */}
                 <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="text-sm text-muted-foreground">
                         Showing {events.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to {Math.min(currentPage * ITEMS_PER_PAGE, totalEvents)} of {totalEvents} events
