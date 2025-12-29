@@ -33,67 +33,19 @@
 //         category: categoryFilter !== "all" ? categoryFilter : undefined,
 //     });
 
-//     console.log(eventsData);
+//     console.log("API Response:", eventsData);
 
-//     // Transform API data for EventCard - USING REAL DATA
-//     const transformEventData = (apiEvent: any) => {
-//         // Format date from "2026-12-25" to "8/22/2025" format
-//         const formatDate = (dateString: string) => {
-//             const date = new Date(dateString);
-//             return date.toLocaleDateString("en-US", {
-//                 month: "numeric",
-//                 day: "numeric",
-//                 year: "numeric",
-//             });
-//         };
-
-//         // Calculate revenue from REAL data
-//         const revenue = apiEvent.ticketsSold * apiEvent.ticketPrice;
-
-//         // Calculate engagement from REAL data (favorites vs views)
-//         const engagement = apiEvent.views > 0 ? Math.round((apiEvent.favorites / apiEvent.views) * 100) : 0;
-
-//         // Map status - Use REAL API status
-//         let displayStatus = apiEvent.status;
-//         // Format for UI if needed
-//         if (apiEvent.status === EVENT_STATUS.APPROVED) {
-//             displayStatus = "published";
-//         } else if (apiEvent.status === EVENT_STATUS.PENDING) {
-//             displayStatus = "draft";
-//         }
-
-//         // Format category from REAL data
-//         const category = apiEvent.category ? apiEvent.category.charAt(0).toUpperCase() + apiEvent.category.slice(1) : "Other";
-
-//         return {
-//             id: apiEvent._id,
-//             title: apiEvent.title,
-//             category: category,
-//             description: apiEvent.description,
-//             date: formatDate(apiEvent.startDate),
-//             time: apiEvent.startTime,
-//             location: apiEvent.address,
-//             sold: apiEvent.ticketsSold, // REAL sold tickets
-//             total: apiEvent.capacity, // REAL capacity
-//             revenue: revenue, // REAL calculated revenue
-//             views: apiEvent.views, // REAL views
-//             engagement: engagement, // REAL calculated engagement
-//             image: apiEvent.images?.[0] || "", // REAL image or empty string
-//             status: displayStatus, // REAL status (mapped for UI)
-//         };
-//     };
-
+//     // Send raw API data to EventCard - NO TRANSFORMATION HERE
 //     const events = useMemo(() => {
 //         if (!eventsData?.data?.data) return [];
-//         return eventsData.data.data.map(transformEventData);
+//         return eventsData.data.data; // Send raw API data
 //     }, [eventsData]);
-//     console.log(events);
 
 //     const meta = eventsData?.data?.meta;
 //     const totalEvents = meta?.total || 0;
 //     const totalPages = meta?.totalPages || 1;
 
-//     // Generate page numbers (same as your admin page - max 5 pages)
+//     // Generate page numbers
 //     const pageNumbers = useMemo(() => {
 //         const pages = [];
 //         const maxPages = 5;
@@ -247,10 +199,10 @@
 //                     </Select>
 //                 </div>
 
-//                 {/* Events Grid */}
+//                 {/* Events Grid - SEND RAW API DATA */}
 //                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 //                     {events.length > 0 ? (
-//                         events.map((event: any) => <EventCard key={event.id} event={event} />)
+//                         events.map((event: any) => <EventCard key={event._id} event={event} />)
 //                     ) : (
 //                         <div className="col-span-full text-center py-12">
 //                             <p className="text-muted-foreground">No events found</p>
@@ -258,7 +210,7 @@
 //                     )}
 //                 </div>
 
-//                 {/* Pagination - EXACT SAME as your admin page */}
+//                 {/* Pagination */}
 //                 <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 //                     <div className="text-sm text-muted-foreground">
 //                         Showing {events.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to {Math.min(currentPage * ITEMS_PER_PAGE, totalEvents)} of {totalEvents} events
@@ -288,7 +240,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import EventCard from "@/components/dashboard/my-events/EventCard";
 import { CreateEventModal } from "@/components/dashboard/my-events/CreateEvent";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -319,31 +271,73 @@ export default function EventsPage() {
 
     console.log("API Response:", eventsData);
 
-    // Send raw API data to EventCard - NO TRANSFORMATION HERE
+    // Send raw API data to EventCard
     const events = useMemo(() => {
         if (!eventsData?.data?.data) return [];
-        return eventsData.data.data; // Send raw API data
+        return eventsData.data.data;
     }, [eventsData]);
 
     const meta = eventsData?.data?.meta;
     const totalEvents = meta?.total || 0;
     const totalPages = meta?.totalPages || 1;
 
-    // Generate page numbers
-    const pageNumbers = useMemo(() => {
-        const pages = [];
-        const maxPages = 5;
-        let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
-        const endPage = Math.min(totalPages, startPage + maxPages - 1);
+    // Generate page numbers with ellipsis - FIXED VERSION
+    const paginationItems = useMemo(() => {
+        if (totalPages <= 1) return [1];
 
-        if (endPage - startPage < maxPages - 1) {
-            startPage = Math.max(1, endPage - maxPages + 1);
+        const items = [];
+        const maxVisiblePages = 5;
+
+        if (totalPages <= maxVisiblePages) {
+            // Show all pages if total pages are less than max visible
+            for (let i = 1; i <= totalPages; i++) {
+                items.push(i);
+            }
+        } else {
+            // Always show first page
+            items.push(1);
+
+            let startPage = Math.max(2, currentPage - 1);
+            let endPage = Math.min(totalPages - 1, currentPage + 1);
+
+            // Adjust if we're near the beginning
+            if (currentPage <= 3) {
+                startPage = 2;
+                endPage = Math.min(4, totalPages - 1);
+            }
+
+            // Adjust if we're near the end
+            if (currentPage >= totalPages - 2) {
+                startPage = Math.max(2, totalPages - 3);
+                endPage = totalPages - 1;
+            }
+
+            // Add ellipsis after first page if needed
+            if (startPage > 2) {
+                items.push("ellipsis-start");
+            }
+
+            // Add visible pages
+            for (let i = startPage; i <= endPage; i++) {
+                items.push(i);
+            }
+
+            // Add ellipsis before last page if needed
+            if (endPage < totalPages - 1) {
+                items.push("ellipsis-end");
+            }
+
+            // Always show last page
+            if (totalPages > 1) {
+                items.push(totalPages);
+            }
         }
 
-        for (let i = startPage; i <= endPage; i++) {
-            pages.push(i);
-        }
-        return pages;
+        return items.filter(
+            (item, index, self) =>
+                // Remove duplicates
+                typeof item === "string" || self.indexOf(item) === index
+        );
     }, [currentPage, totalPages]);
 
     const handlePageChange = (page: number) => {
@@ -483,7 +477,7 @@ export default function EventsPage() {
                     </Select>
                 </div>
 
-                {/* Events Grid - SEND RAW API DATA */}
+                {/* Events Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     {events.length > 0 ? (
                         events.map((event: any) => <EventCard key={event._id} event={event} />)
@@ -494,25 +488,39 @@ export default function EventsPage() {
                     )}
                 </div>
 
-                {/* Pagination */}
-                <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div className="text-sm text-muted-foreground">
-                        Showing {events.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to {Math.min(currentPage * ITEMS_PER_PAGE, totalEvents)} of {totalEvents} events
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        <Button variant="outline" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                            Previous
-                        </Button>
-                        {pageNumbers.map((page) => (
-                            <Button key={page} variant={currentPage === page ? "default" : "outline"} onClick={() => handlePageChange(page)} className={`w-10 h-10 ${currentPage === page ? "bg-[#5C22BF] text-white border-[#5C22BF]" : ""}`}>
-                                {page}
+                {/* Pagination with ellipsis */}
+                {totalPages > 1 && (
+                    <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div className="text-sm text-muted-foreground">
+                            Showing {events.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to {Math.min(currentPage * ITEMS_PER_PAGE, totalEvents)} of {totalEvents} events
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                            <Button variant="outline" size="icon" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                                <ChevronLeft className="w-4 h-4" />
                             </Button>
-                        ))}
-                        <Button variant="outline" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                            Next
-                        </Button>
+
+                            {paginationItems.map((item, index) => {
+                                if (item === "ellipsis-start" || item === "ellipsis-end") {
+                                    return (
+                                        <Button key={`${item}-${index}`} variant="outline" size="icon" disabled className="w-10 h-10">
+                                            <MoreHorizontal className="w-4 h-4" />
+                                        </Button>
+                                    );
+                                }
+
+                                return (
+                                    <Button key={`page-${item}`} variant={currentPage === item ? "default" : "outline"} onClick={() => handlePageChange(item as number)} className={`w-10 h-10 ${currentPage === item ? "bg-[#5C22BF] text-white border-[#5C22BF]" : ""}`}>
+                                        {item}
+                                    </Button>
+                                );
+                            })}
+
+                            <Button variant="outline" size="icon" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                                <ChevronRight className="w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </main>
     );
