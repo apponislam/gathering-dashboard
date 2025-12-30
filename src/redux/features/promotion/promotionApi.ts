@@ -3,6 +3,15 @@ import { baseApi } from "@/redux/api/baseApi";
 export const promotionApi = baseApi.injectEndpoints({
     overrideExisting: true,
     endpoints: (builder) => ({
+        // Get organizer promotion statistics
+        getOrganizerPromotionStats: builder.query({
+            query: () => ({
+                url: "/stats/organizer/promotions",
+                method: "GET",
+            }),
+            providesTags: ["PromotionStats"],
+        }),
+
         // Get my promotions with pagination
         getMyPromotions: builder.query({
             query: (params?: { page?: number; limit?: number }) => ({
@@ -13,6 +22,7 @@ export const promotionApi = baseApi.injectEndpoints({
                     limit: params?.limit || 10,
                 },
             }),
+            providesTags: ["Promotion"],
         }),
 
         // Get promotion by ID
@@ -21,6 +31,7 @@ export const promotionApi = baseApi.injectEndpoints({
                 url: `/promotion/${id}`,
                 method: "GET",
             }),
+            providesTags: (result, error, id) => [{ type: "Promotion", id }],
         }),
 
         // Create new promotion
@@ -30,6 +41,7 @@ export const promotionApi = baseApi.injectEndpoints({
                 method: "POST",
                 body: data,
             }),
+            invalidatesTags: ["Promotion", "PromotionStats"],
         }),
 
         // Update promotion
@@ -39,6 +51,7 @@ export const promotionApi = baseApi.injectEndpoints({
                 method: "PATCH",
                 body: data,
             }),
+            invalidatesTags: (result, error, { id }) => [{ type: "Promotion", id }, "PromotionStats"],
         }),
 
         // Toggle promotion status (activate/deactivate)
@@ -47,8 +60,9 @@ export const promotionApi = baseApi.injectEndpoints({
                 url: `/promotion/${id}/toggle-status`,
                 method: "PATCH",
             }),
+            invalidatesTags: (result, error, id) => [{ type: "Promotion", id }, "PromotionStats"],
         }),
     }),
 });
 
-export const { useGetMyPromotionsQuery, useGetPromotionByIdQuery, useCreatePromotionMutation, useUpdatePromotionMutation, useTogglePromotionStatusMutation } = promotionApi;
+export const { useGetOrganizerPromotionStatsQuery, useGetMyPromotionsQuery, useGetPromotionByIdQuery, useCreatePromotionMutation, useUpdatePromotionMutation, useTogglePromotionStatusMutation } = promotionApi;
