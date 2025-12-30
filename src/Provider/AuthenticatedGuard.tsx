@@ -20,7 +20,6 @@ const AuthenticatedGuard = ({ children, redirectTo = "/auth/login" }: Authentica
 
         const checkAuth = () => {
             if (!isAuthenticated || !accessToken) {
-                // User is NOT authenticated → redirect to login
                 router.push(redirectTo);
             } else if (isMounted) {
                 setIsChecking(false);

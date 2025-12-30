@@ -1,144 +1,3 @@
-// "use client";
-
-// import { useState } from "react";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { Badge } from "@/components/ui/badge";
-// import { Switch } from "@/components/ui/switch";
-// import { Progress } from "@/components/ui/progress";
-// import { CalendarDays, Copy, Tags, Zap } from "lucide-react";
-// import { CreatePromotionModal } from "@/components/dashboard/promotions/PromotionModal";
-// import { SidebarTrigger } from "@/components/ui/sidebar";
-
-// export default function PromotionsPage() {
-//     const [isModalOpen, setIsModalOpen] = useState(false);
-//     const [buttonText, setButtonText] = useState("Copy Code");
-
-//     return (
-//         <div className="min-h-screen md:p-8">
-//             <div className="max-w-6xl mx-auto">
-//                 {/* Header */}
-//                 <div className="mb-8">
-//                     <div className="flex items-center gap-2">
-//                         <SidebarTrigger className="md:hidden block" />
-//                         <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Promotions & Discounts</h1>
-//                     </div>
-//                     <p className="text-muted-foreground">Manage your events with ease</p>
-//                 </div>
-
-//                 {/* Stats Section */}
-//                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-//                     <Card>
-//                         <CardHeader className="pb-3">
-//                             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-//                                 <Zap className="w-4 h-4" />
-//                                 Active Promotions
-//                             </CardTitle>
-//                         </CardHeader>
-//                         <CardContent>
-//                             <div className="text-3xl font-bold text-foreground">1</div>
-//                         </CardContent>
-//                     </Card>
-
-//                     <Card>
-//                         <CardHeader className="pb-3">
-//                             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-//                                 <Tags className="w-4 h-4" />
-//                                 Total Promotions
-//                             </CardTitle>
-//                         </CardHeader>
-//                         <CardContent>
-//                             <div className="text-3xl font-bold text-foreground">1</div>
-//                         </CardContent>
-//                     </Card>
-
-//                     <Card>
-//                         <CardHeader className="pb-3">
-//                             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-//                                 <CalendarDays className="w-4 h-4" />
-//                                 Total Redemptions
-//                             </CardTitle>
-//                         </CardHeader>
-//                         <CardContent>
-//                             <div className="text-3xl font-bold text-foreground">143</div>
-//                         </CardContent>
-//                     </Card>
-//                 </div>
-
-//                 {/* Main Content Section */}
-//                 <Card>
-//                     <CardHeader className="flex flex-col md:flex-row items-center justify-between pb-4 border-b">
-//                         <div>
-//                             <CardTitle>Promotions & Discounts</CardTitle>
-//                             <p className="text-sm text-muted-foreground mt-1">Create and manage promotional codes for your event</p>
-//                         </div>
-//                         <Button onClick={() => setIsModalOpen(true)} className="bg-primary text-primary-foreground">
-//                             + New Promotion
-//                         </Button>
-//                     </CardHeader>
-
-//                     <CardContent className="pt-6">
-//                         {/* Promotion Item */}
-//                         <div className="space-y-6">
-//                             <div className="flex items-start justify-between pb-6 border-b last:border-b-0">
-//                                 <div className="flex-1">
-//                                     <div className="flex items-center gap-3 mb-4">
-//                                         <h3 className="text-lg font-semibold text-foreground">EARLYBIRD</h3>
-//                                         <Badge variant="secondary">Active</Badge>
-//                                         <Switch defaultChecked />
-//                                         {/* Copy Button */}
-//                                         <Button
-//                                             variant="ghost"
-//                                             size="sm"
-//                                             className="ml-auto"
-//                                             onClick={async () => {
-//                                                 try {
-//                                                     await navigator.clipboard.writeText("EARLYBIRD");
-//                                                     setButtonText("Copied!");
-
-//                                                     setTimeout(() => {
-//                                                         setButtonText("Copy Code");
-//                                                     }, 2000);
-//                                                 } catch (err) {
-//                                                     console.error("Failed to copy: ", err);
-//                                                 }
-//                                             }}
-//                                         >
-//                                             <Copy className="w-4 h-4 mr-2" />
-//                                             {buttonText}
-//                                         </Button>
-//                                     </div>
-
-//                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-//                                         <div>
-//                                             <p className="text-sm text-muted-foreground mb-1">Discount</p>
-//                                             <p className="text-xl font-bold text-foreground">$ 150</p>
-//                                         </div>
-//                                         <div>
-//                                             <p className="text-sm text-muted-foreground mb-1">Valid Until</p>
-//                                             <p className="text-xl font-bold text-foreground">7/16/2025</p>
-//                                         </div>
-//                                         <div>
-//                                             <p className="text-sm text-muted-foreground mb-1">Usage</p>
-//                                             <div className="flex items-center gap-2">
-//                                                 <Progress value={75} className="flex-1 h-2" />
-//                                                 <p className="text-sm font-medium text-foreground">143 / 190</p>
-//                                             </div>
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </CardContent>
-//                 </Card>
-//             </div>
-
-//             {/* Modal */}
-//             <CreatePromotionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-//         </div>
-//     );
-// }
-
 "use client";
 
 import { useState } from "react";
@@ -147,24 +6,33 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { CalendarDays, Copy, Tags, Zap, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, Copy, Tags, Zap, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { CreatePromotionModal } from "@/components/dashboard/promotions/PromotionModal";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useGetMyPromotionsQuery, useTogglePromotionStatusMutation, useCreatePromotionMutation } from "@/redux/features/promotion/promotionApi";
+import {
+    useGetMyPromotionsQuery,
+    useTogglePromotionStatusMutation,
+    useCreatePromotionMutation,
+    useGetOrganizerPromotionStatsQuery, // Import the new hook
+} from "@/redux/features/promotion/promotionApi";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PromotionsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
 
+    // Fetch promotion statistics
+    const { data: statsData, isLoading: statsLoading, isError: statsError, refetch: refetchStats } = useGetOrganizerPromotionStatsQuery(undefined);
+
     // Fetch promotions
     const {
         data: promotionsData,
-        isLoading,
-        isError,
-        refetch,
+        isLoading: promotionsLoading,
+        isError: promotionsError,
+        refetch: refetchPromotions,
     } = useGetMyPromotionsQuery({
         page: currentPage,
         limit: pageSize,
@@ -181,7 +49,8 @@ export default function PromotionsPage() {
     const handleToggleStatus = async (id: string) => {
         try {
             await togglePromotionStatus(id).unwrap();
-            refetch();
+            refetchPromotions();
+            refetchStats(); // Also refetch stats since they changed
             toast.success("Promotion status updated successfully");
         } catch (error) {
             console.log(error);
@@ -205,7 +74,8 @@ export default function PromotionsPage() {
 
             await createPromotion(promotionData).unwrap();
             setIsModalOpen(false);
-            refetch();
+            refetchPromotions();
+            refetchStats(); // Also refetch stats since new promotion was created
             toast.success("Promotion created successfully");
         } catch (error: any) {
             toast.error(error?.data?.message || "Failed to create promotion");
@@ -223,17 +93,60 @@ export default function PromotionsPage() {
         }
     };
 
-    // Calculate total stats
-    const totalPromotions = meta?.total || 0;
-    const activePromotions = promotions.filter((p: any) => p.isActive).length;
-    const totalRedemptions = promotions.reduce((sum: number, promo: any) => sum + (promo.usedCount || 0), 0);
+    // Use API stats instead of calculating from promotions
+    const stats = statsData?.data || {
+        activePromotions: 0,
+        totalPromotions: 0,
+        totalRedemptions: 0,
+    };
+
+    const isLoading = statsLoading || promotionsLoading;
+    const isError = statsError || promotionsError;
 
     if (isLoading) {
         return (
             <div className="min-h-screen md:p-8 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-muted-foreground">Loading promotions...</p>
+                <div className="max-w-6xl mx-auto w-full">
+                    {/* Header Skeleton */}
+                    <div className="mb-8">
+                        <div className="flex items-center gap-2">
+                            <SidebarTrigger className="md:hidden block" />
+                            <Skeleton className="h-10 w-64" />
+                        </div>
+                        <Skeleton className="h-5 w-80 mt-2" />
+                    </div>
+
+                    {/* Stats Section Skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        {[1, 2, 3].map((i) => (
+                            <Card key={i}>
+                                <CardHeader className="pb-3">
+                                    <Skeleton className="h-4 w-32" />
+                                </CardHeader>
+                                <CardContent>
+                                    <Skeleton className="h-10 w-20" />
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {/* Main Content Skeleton */}
+                    <Card>
+                        <CardHeader className="flex flex-col md:flex-row items-center justify-between pb-4 border-b">
+                            <div>
+                                <Skeleton className="h-6 w-48" />
+                                <Skeleton className="h-4 w-64 mt-2" />
+                            </div>
+                            <Skeleton className="h-10 w-40" />
+                        </CardHeader>
+                        <CardContent className="pt-6">
+                            <div className="space-y-6">
+                                {[1, 2].map((i) => (
+                                    <Skeleton key={i} className="h-32 w-full" />
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         );
@@ -244,10 +157,21 @@ export default function PromotionsPage() {
             <div className="min-h-screen md:p-8">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center py-12">
-                        <p className="text-destructive">Failed to load promotions. Please try again.</p>
-                        <Button onClick={() => refetch()} className="mt-4">
-                            Retry
-                        </Button>
+                        <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+                        <p className="text-destructive mb-4">Failed to load promotions data.</p>
+                        <div className="flex gap-2 justify-center">
+                            <Button
+                                onClick={() => {
+                                    refetchPromotions();
+                                    refetchStats();
+                                }}
+                            >
+                                Retry
+                            </Button>
+                            <Button variant="outline" onClick={() => setIsModalOpen(true)}>
+                                Create Promotion Anyway
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -266,7 +190,7 @@ export default function PromotionsPage() {
                     <p className="text-muted-foreground">Manage your promotions with ease</p>
                 </div>
 
-                {/* Stats Section */}
+                {/* Stats Section - Using API data */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     <Card>
                         <CardHeader className="pb-3">
@@ -276,7 +200,8 @@ export default function PromotionsPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-foreground">{activePromotions}</div>
+                            <div className="text-3xl font-bold text-foreground">{stats.activePromotions}</div>
+                            <p className="text-xs text-muted-foreground mt-1">Currently active promotion codes</p>
                         </CardContent>
                     </Card>
 
@@ -288,7 +213,8 @@ export default function PromotionsPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-foreground">{totalPromotions}</div>
+                            <div className="text-3xl font-bold text-foreground">{stats.totalPromotions}</div>
+                            <p className="text-xs text-muted-foreground mt-1">All promotions created</p>
                         </CardContent>
                     </Card>
 
@@ -300,7 +226,8 @@ export default function PromotionsPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-foreground">{totalRedemptions}</div>
+                            <div className="text-3xl font-bold text-foreground">{stats.totalRedemptions}</div>
+                            <p className="text-xs text-muted-foreground mt-1">Total times promotions used</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -310,7 +237,9 @@ export default function PromotionsPage() {
                     <CardHeader className="flex flex-col md:flex-row items-center justify-between pb-4 border-b">
                         <div>
                             <CardTitle>Promotions & Discounts</CardTitle>
-                            <p className="text-sm text-muted-foreground mt-1">Create and manage promotional codes</p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                                Showing {promotions.length} of {stats.totalPromotions} promotions
+                            </p>
                         </div>
                         <Button onClick={() => setIsModalOpen(true)} className="bg-primary text-primary-foreground">
                             + New Promotion
@@ -321,6 +250,7 @@ export default function PromotionsPage() {
                         {/* Promotion Items */}
                         {promotions.length === 0 ? (
                             <div className="text-center py-12">
+                                <Tags className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                                 <p className="text-muted-foreground mb-4">No promotions found</p>
                                 <Button onClick={() => setIsModalOpen(true)}>Create Your First Promotion</Button>
                             </div>
@@ -329,14 +259,17 @@ export default function PromotionsPage() {
                                 {promotions.map((promotion: any) => {
                                     const usagePercentage = (promotion.usedCount / promotion.usageLimit) * 100;
                                     const validDate = new Date(promotion.validUntil);
+                                    const isExpired = new Date() > validDate;
 
                                     return (
                                         <div key={promotion._id} className="flex items-start justify-between pb-6 border-b last:border-b-0">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3 mb-4">
                                                     <h3 className="text-lg font-semibold text-foreground">{promotion.code}</h3>
-                                                    <Badge variant={promotion.isActive ? "default" : "secondary"}>{promotion.isActive ? "Active" : "Inactive"}</Badge>
-                                                    <Switch checked={promotion.isActive} onCheckedChange={() => handleToggleStatus(promotion._id)} />
+                                                    <div className="flex items-center gap-2">
+                                                        <Badge variant={!promotion.isActive ? "secondary" : isExpired ? "destructive" : "default"}>{!promotion.isActive ? "Inactive" : isExpired ? "Expired" : "Active"}</Badge>
+                                                        {promotion.isActive && !isExpired && <Switch checked={promotion.isActive} onCheckedChange={() => handleToggleStatus(promotion._id)} />}
+                                                    </div>
                                                     {/* Copy Button */}
                                                     <Button variant="ghost" size="sm" className="ml-auto" onClick={() => handleCopyCode(promotion.code)}>
                                                         <Copy className="w-4 h-4 mr-2" />
@@ -354,6 +287,7 @@ export default function PromotionsPage() {
                                                     <div>
                                                         <p className="text-sm text-muted-foreground mb-1">Valid Until</p>
                                                         <p className="text-xl font-bold text-foreground">{format(validDate, "MM/dd/yyyy")}</p>
+                                                        {isExpired && <p className="text-xs text-destructive mt-1">Expired</p>}
                                                     </div>
                                                     <div>
                                                         <p className="text-sm text-muted-foreground mb-1">Usage</p>
@@ -376,7 +310,7 @@ export default function PromotionsPage() {
                         {totalPages > 1 && (
                             <div className="flex items-center justify-between pt-6 border-t">
                                 <div className="text-sm text-muted-foreground">
-                                    Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalPromotions)} of {totalPromotions} promotions
+                                    Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, meta?.total || 0)} of {meta?.total || 0} promotions
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Button variant="outline" size="sm" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
