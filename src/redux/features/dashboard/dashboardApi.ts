@@ -3,8 +3,6 @@ import { baseApi } from "@/redux/api/baseApi";
 export const dashboardApi = baseApi.injectEndpoints({
     overrideExisting: true,
     endpoints: (builder) => ({
-        // ... existing endpoints ...
-
         getAdminUsersStats: builder.query({
             query: () => ({
                 url: "/stats/admin/users",
@@ -22,11 +20,15 @@ export const dashboardApi = baseApi.injectEndpoints({
             }),
             providesTags: ["Dashboard"],
         }),
+
+        getEventAnalytics: builder.query({
+            query: (eventId: string) => ({
+                url: `/stats/analytics/${eventId}`,
+                method: "GET",
+            }),
+            providesTags: (result, error, eventId) => [{ type: "EventAnalytics", id: eventId }],
+        }),
     }),
 });
 
-export const {
-    // ... other exports ...
-    useGetAdminUsersStatsQuery,
-    useGetAdminDashboardStatsQuery,
-} = dashboardApi;
+export const { useGetAdminUsersStatsQuery, useGetAdminDashboardStatsQuery, useGetEventAnalyticsQuery } = dashboardApi;
