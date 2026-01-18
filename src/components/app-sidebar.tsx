@@ -13,12 +13,10 @@ import { baseApi } from "@/redux/api/baseApi";
 export function AppSidebar() {
     const pathname = usePathname();
     const role = useAppSelector(selectRole);
-    console.log(role);
     const items = role ? menuItems[role] : [];
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { data: myProfile } = useGetUserProfileQuery();
-    console.log(myProfile);
 
     const handleLogout = () => {
         dispatch(logout());
