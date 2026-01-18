@@ -64,8 +64,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin, Clock, Video, Calendar } from "lucide-react";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetEventByIdQuery } from "@/redux/features/events/eventsApi";
@@ -171,7 +169,7 @@ export default function EventHeaderAndDetails() {
     }
 
     return (
-        <div className="border-b border-border pb-8">
+        <div className="">
             {/* Header Section */}
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">{eventData.title || "Event Details"}</h1>
@@ -215,7 +213,7 @@ export default function EventHeaderAndDetails() {
             </div>
 
             {/* Details Input Section - Read Only Display */}
-            <div className="space-y-6">
+            {/* <div className="space-y-6">
                 <div>
                     <label className="text-sm font-semibold text-foreground mb-2 block">Title</label>
                     <Input value={eventData.title || ""} readOnly className="bg-muted rounded-lg p-4 min-h-12 text-foreground cursor-default" />
@@ -225,7 +223,7 @@ export default function EventHeaderAndDetails() {
                     <label className="text-sm font-semibold text-foreground mb-2 block">Description</label>
                     <Textarea value={eventData.description || ""} readOnly className="bg-muted rounded-lg p-4 min-h-32 text-foreground resize-none cursor-default" rows={5} />
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }
