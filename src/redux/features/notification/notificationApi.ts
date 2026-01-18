@@ -14,7 +14,15 @@ export const notificationsApi = baseApi.injectEndpoints({
             }),
             providesTags: ["Notifications"],
         }),
+        createManualNotification: builder.mutation({
+            query: (notificationData: { targetAudience: string; title: string; content: string; type: string; channel: string; priority: string }) => ({
+                url: "/notifications/manual",
+                method: "POST",
+                body: notificationData,
+            }),
+            invalidatesTags: ["Notifications"],
+        }),
     }),
 });
 
-export const { useGetNotificationsQuery } = notificationsApi;
+export const { useGetNotificationsQuery, useCreateManualNotificationMutation } = notificationsApi;
