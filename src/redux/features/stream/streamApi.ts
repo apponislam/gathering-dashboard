@@ -42,7 +42,13 @@ export const streamApi = baseApi.injectEndpoints({
             }),
             providesTags: ["Livestream"],
         }),
+        getAgoraToken: builder.query({
+            query: (streamId: string) => ({
+                url: `/livestream/${streamId}/token?role=broadcaster`,
+                method: "GET",
+            }),
+        }),
     }),
 });
 
-export const { useCreateLivestreamMutation, useStartLivestreamMutation, useEndLivestreamMutation, useGetEventLivestreamsQuery } = streamApi;
+export const { useCreateLivestreamMutation, useStartLivestreamMutation, useEndLivestreamMutation, useGetEventLivestreamsQuery, useLazyGetAgoraTokenQuery } = streamApi;

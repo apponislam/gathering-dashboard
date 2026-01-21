@@ -1,77 +1,14 @@
-// "use client";
-
-// import { useState } from "react";
-// import StreamDetails from "./StreamDetails";
-// import LivePlayer from "./LivePlayer";
-// import LiveChat from "./LiveChat";
-
-// const Broadcast = () => {
-//     const [currentStreamId, setCurrentStreamId] = useState<string | null>(null);
-//     const [isStreamActive, setIsStreamActive] = useState(false);
-
-//     return (
-//         <div className="flex flex-col h-screen  overflow-hidden">
-//             <div className="border-b border-border pb-6 px-6">
-//                 <StreamDetails onStreamStart={() => setIsStreamActive(true)} onStreamChange={setCurrentStreamId} />
-//             </div>
-
-//             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pt-3">
-//                 <div className="lg:w-2/3 h-[60vh] lg:h-full p-6">
-//                     <LivePlayer isStreamActive={isStreamActive} onStreamToggle={setIsStreamActive} />
-//                 </div>
-
-//                 <div className="lg:w-1/3 h-[40vh] lg:h-full border-t lg:border-t-0 lg:border-0 border-border">
-//                     <LiveChat streamId={currentStreamId} isConnected={isStreamActive} />
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default Broadcast;
-
-// "use client";
-
-// import { useState } from "react";
-// import LiveStreamView from "./LiveStreamView";
-// import StreamCreator from "./streamCreator";
-
-// const Broadcast = () => {
-//     const [currentStreamId, setCurrentStreamId] = useState<string | null>(null);
-//     const [isStreamActive, setIsStreamActive] = useState(false);
-
-//     // If no stream created yet, show stream creator
-//     if (!currentStreamId) {
-//         return (
-//             <div className="h-screen flex items-center justify-center bg-background">
-//                 <div className="max-w-2xl w-full p-6">
-//                     <StreamCreator onStreamCreated={setCurrentStreamId} />
-//                 </div>
-//             </div>
-//         );
-//     }
-
-//     // If stream exists, show live stream view
-//     return (
-//         <div className="flex flex-col h-screen bg-background overflow-hidden">
-//             <LiveStreamView streamId={currentStreamId} isStreamActive={isStreamActive} onStreamActiveChange={setIsStreamActive} onStreamDeleted={() => setCurrentStreamId(null)} />
-//         </div>
-//     );
-// };
-
-// export default Broadcast;
-
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Volume2, Settings, Play, Send, Users, Fullscreen, Minimize2, Loader2, EyeOff, Mic, MicOff, Square } from "lucide-react";
+import { Volume2, Settings, Play, Send, Users, Fullscreen, Minimize2, Loader2, EyeOff, MicOff, Square, Video, Mic as MicIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { useCreateLivestreamMutation, useGetEventLivestreamsQuery, useStartLivestreamMutation, useEndLivestreamMutation } from "@/redux/features/stream/streamApi";
-import AgoraRTC from "agora-rtc-sdk-ng";
+import { useCreateLivestreamMutation, useGetEventLivestreamsQuery, useStartLivestreamMutation, useEndLivestreamMutation, useLazyGetAgoraTokenQuery } from "@/redux/features/stream/streamApi";
+import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng";
 import type { ICameraVideoTrack, IMicrophoneAudioTrack } from "agora-rtc-sdk-ng";
 import { ChatMessage, useGetChatMessagesQuery, useGetChatParticipantsQuery, useSendMessageMutation } from "@/redux/features/streamChat/streamChatApi";
 
@@ -87,29 +24,28 @@ export default function LiveStreamWithChat() {
     const [isStoppingStream, setIsStoppingStream] = useState(false);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+    const [isAgoraJoined, setIsAgoraJoined] = useState(false);
+    const [isCameraReady, setIsCameraReady] = useState(false);
+    const [cameraError, setCameraError] = useState<string | null>(null);
 
     const videoContainerRef = useRef<HTMLDivElement>(null);
+    const clientRef = useRef<IAgoraRTCClient | null>(null);
     const localVideoTrackRef = useRef<ICameraVideoTrack | null>(null);
     const localAudioTrackRef = useRef<IMicrophoneAudioTrack | null>(null);
 
     // RTK Queries
-    const {
-        data: streamsData,
-
-        refetch: refetchStreams,
-    } = useGetEventLivestreamsQuery(eventId as string, {
+    const { data: streamsData, refetch: refetchStreams } = useGetEventLivestreamsQuery(eventId as string, {
         refetchOnMountOrArgChange: true,
     });
     const [createLivestream, { isLoading: isCreatingStream }] = useCreateLivestreamMutation();
     const [startLivestream] = useStartLivestreamMutation();
     const [endLivestream] = useEndLivestreamMutation();
+    const [getAgoraToken, { isLoading: isLoadingToken }] = useLazyGetAgoraTokenQuery();
 
     const existingStream = streamsData?.data;
-
     const streamId = existingStream?.id;
 
     const { data: messagesData, isLoading: isLoadingMessages, refetch: refetchMessages } = useGetChatMessagesQuery({ streamId: streamId || "", limit: 50 }, { skip: !streamId });
-
     const { data: participantsData } = useGetChatParticipantsQuery(streamId || "", { skip: !streamId });
     const [sendMessage, { isLoading: isSendingMessage }] = useSendMessageMutation();
 
@@ -118,12 +54,36 @@ export default function LiveStreamWithChat() {
 
     // Use local state for immediate UI updates, fallback to API data
     const streamStatus = localStreamStatus || existingStream?.streamStatus || "";
-    const isStreamActive = streamStatus === "live" || streamStatus === "starting";
+
+    // SIMPLE LOGIC: Just check specific statuses
+    const isStreamScheduled = streamStatus === "scheduled";
+    const isStreamLive = streamStatus === "live";
+    const isStreamEnded = streamStatus === "ended";
+    const isStreamStarting = streamStatus === "starting";
+    const isStreamCancelled = streamStatus === "cancelled";
 
     console.log("existingStream:", existingStream);
     console.log("streamStatus:", streamStatus);
-    console.log("isStreamActive:", isStreamActive);
-    console.log("streamId:", streamId);
+    console.log("isStreamScheduled:", isStreamScheduled);
+    console.log("isStreamLive:", isStreamLive);
+    console.log("isCameraReady:", isCameraReady);
+    console.log("localVideoTrackRef.current:", !!localVideoTrackRef.current);
+
+    // Initialize Agora client
+    const initializeAgoraClient = useCallback(() => {
+        if (!clientRef.current) {
+            try {
+                clientRef.current = AgoraRTC.createClient({
+                    mode: "live",
+                    codec: "vp8",
+                });
+                console.log("Agora client initialized");
+            } catch (error) {
+                console.error("Error initializing Agora client:", error);
+            }
+        }
+        return clientRef.current;
+    }, []);
 
     // Set existing stream data if available
     useEffect(() => {
@@ -134,86 +94,209 @@ export default function LiveStreamWithChat() {
         }
     }, [existingStream]);
 
-    // Setup camera when stream is active
+    // Initialize Agora client on mount
     useEffect(() => {
-        if (isStreamActive && streamId) {
-            setupLocalMedia();
-        } else {
-            cleanupLocalMedia();
-        }
+        const client = initializeAgoraClient();
 
         return () => {
-            cleanupLocalMedia();
+            cleanupAgora();
         };
-    }, [isStreamActive, streamId]);
+    }, [initializeAgoraClient]);
 
-    // Auto-refresh messages when stream is active
+    // Cleanup Agora resources - SIMPLIFIED
+    const cleanupAgora = async () => {
+        console.log("Cleaning up Agora resources");
+
+        try {
+            // Stop tracks first
+            if (localVideoTrackRef.current) {
+                localVideoTrackRef.current.stop();
+                localVideoTrackRef.current.close();
+                localVideoTrackRef.current = null;
+            }
+
+            if (localAudioTrackRef.current) {
+                localAudioTrackRef.current.stop();
+                localAudioTrackRef.current.close();
+                localAudioTrackRef.current = null;
+            }
+
+            // Leave channel if joined
+            if (clientRef.current && isAgoraJoined) {
+                await clientRef.current.leave();
+                setIsAgoraJoined(false);
+            }
+
+            setIsCameraReady(false);
+            setCameraError(null);
+
+            console.log("Agora cleanup complete");
+        } catch (error) {
+            console.error("Error cleaning up Agora:", error);
+        }
+    };
+
+    // Check camera availability
+    const checkCameraAccess = async (): Promise<boolean> => {
+        try {
+            // Try to access camera with simple settings
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    frameRate: { ideal: 15 },
+                },
+                audio: false,
+            });
+
+            // Stop the test stream
+            stream.getTracks().forEach((track) => track.stop());
+            return true;
+        } catch (error: any) {
+            console.error("Camera access test failed:", error);
+            return false;
+        }
+    };
+
+    // Setup camera and join Agora channel - FIXED
+    const setupCameraAndJoinAgora = async () => {
+        if (!streamId) {
+            toast.error("No stream ID found");
+            return;
+        }
+
+        setCameraError(null);
+        setIsCameraReady(false);
+
+        try {
+            // 1. Cleanup any existing resources
+            await cleanupAgora();
+
+            // 2. First check if camera is accessible
+            const hasCameraAccess = await checkCameraAccess();
+            if (!hasCameraAccess) {
+                throw new Error("Camera access denied or not available. Please allow camera permissions.");
+            }
+
+            // 3. Get Agora token from API
+            const tokenResult = await getAgoraToken(streamId).unwrap();
+            if (!tokenResult.success) {
+                throw new Error(tokenResult.message || "Failed to get token");
+            }
+
+            const tokenData = tokenResult.data;
+            console.log("Got token data:", tokenData);
+
+            // 4. Initialize client if needed
+            const client = initializeAgoraClient();
+            if (!client) {
+                throw new Error("Failed to initialize Agora client");
+            }
+
+            // 5. Join Agora channel first
+            const appId = tokenData.token.substring(3, 27);
+            await client.join(appId, tokenData.channelName, tokenData.token, tokenData.uid || null);
+            setIsAgoraJoined(true);
+
+            // 6. Set client role based on token role
+            const clientRole = tokenData.role === "publisher" ? "host" : "audience";
+            await client.setClientRole(clientRole);
+
+            // 7. If broadcaster (host), create and publish tracks
+            if (clientRole === "host") {
+                try {
+                    // Create tracks with simpler settings
+                    const cameraTrack = await AgoraRTC.createCameraVideoTrack({
+                        encoderConfig: "480p",
+                        optimizationMode: "motion",
+                    });
+
+                    const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack({
+                        AEC: true,
+                        ANS: true,
+                        AGC: true,
+                    });
+
+                    localVideoTrackRef.current = cameraTrack;
+                    localAudioTrackRef.current = microphoneTrack;
+
+                    // Publish tracks to Agora
+                    await client.publish([cameraTrack, microphoneTrack]);
+
+                    // Play local video directly in container
+                    if (videoContainerRef.current) {
+                        cameraTrack.play(videoContainerRef.current);
+
+                        // Wait for video to start
+                        setTimeout(() => {
+                            console.log("Camera track should be playing");
+                            setIsCameraReady(true);
+                        }, 1000);
+                    }
+
+                    setIsVideoEnabled(true);
+                    setIsAudioEnabled(true);
+
+                    console.log("Camera setup complete");
+                    toast.success("Streaming started! Your broadcast is now live.");
+                } catch (trackError: any) {
+                    console.error("Error creating media tracks:", trackError);
+
+                    if (trackError.name === "NotAllowedError") {
+                        throw new Error("Camera/microphone access denied. Please allow permissions.");
+                    } else if (trackError.name === "NotFoundError") {
+                        throw new Error("No camera or microphone found on your device.");
+                    } else if (trackError.message?.includes("timeout") || trackError.message?.includes("AbortError")) {
+                        throw new Error("Camera is taking too long to start. Try:\n1. Refresh page\n2. Check browser permissions\n3. Close other apps using camera");
+                    } else {
+                        throw new Error("Failed to start camera: " + (trackError.message || "Unknown error"));
+                    }
+                }
+            } else {
+                toast.success("Joined stream as viewer");
+            }
+        } catch (error: any) {
+            console.error("Error setting up camera/Agora:", error);
+
+            const errorMessage = error.message || "Failed to start streaming";
+
+            // Set specific camera error for UI
+            if (error.message?.includes("Camera") || error.message?.includes("timeout") || error.message?.includes("AbortError")) {
+                setCameraError(errorMessage);
+            }
+
+            toast.error(errorMessage);
+
+            // Cleanup on error
+            await cleanupAgora();
+            throw error;
+        }
+    };
+
+    // Setup camera when stream is live
     useEffect(() => {
-        if (isStreamActive && streamId) {
+        if (isStreamLive && streamId) {
+            console.log("Stream is live, setting up camera and Agora");
+            setupCameraAndJoinAgora().catch((error) => {
+                console.error("Failed to setup camera:", error);
+            });
+        } else {
+            // When stream is not live, cleanup
+            console.log("Stream is not live, cleaning up");
+            cleanupAgora();
+        }
+    }, [isStreamLive, streamId]);
+
+    // Auto-refresh messages when stream is live
+    useEffect(() => {
+        if (isStreamLive && streamId) {
             const interval = setInterval(() => {
                 refetchMessages();
             }, 3000);
 
             return () => clearInterval(interval);
         }
-    }, [isStreamActive, streamId, refetchMessages]);
-
-    // Setup local media (camera + microphone)
-    const setupLocalMedia = async () => {
-        try {
-            // Clean up existing tracks
-            cleanupLocalMedia();
-
-            // Get camera access
-            const cameraTrack = await AgoraRTC.createCameraVideoTrack();
-            const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack();
-
-            localVideoTrackRef.current = cameraTrack;
-            localAudioTrackRef.current = microphoneTrack;
-
-            // Play local video
-            if (videoContainerRef.current) {
-                videoContainerRef.current.innerHTML = "";
-                const videoElement = document.createElement("div");
-                videoElement.className = "w-full h-full";
-                videoContainerRef.current.appendChild(videoElement);
-                cameraTrack.play(videoElement);
-            }
-
-            setIsVideoEnabled(true);
-            setIsAudioEnabled(true);
-        } catch (error: any) {
-            console.error("Error accessing media:", error);
-
-            if (error.name === "NotAllowedError") {
-                toast.error("Please allow camera and microphone access");
-            } else if (error.name === "NotFoundError") {
-                toast.error("No camera or microphone found");
-            } else {
-                toast.error("Failed to access media devices");
-            }
-            throw error;
-        }
-    };
-
-    // Cleanup local media
-    const cleanupLocalMedia = () => {
-        if (localVideoTrackRef.current) {
-            localVideoTrackRef.current.stop();
-            localVideoTrackRef.current.close();
-            localVideoTrackRef.current = null;
-        }
-        if (localAudioTrackRef.current) {
-            localAudioTrackRef.current.stop();
-            localAudioTrackRef.current.close();
-            localAudioTrackRef.current = null;
-        }
-
-        // Clear video container
-        if (videoContainerRef.current) {
-            videoContainerRef.current.innerHTML = "";
-        }
-    };
+    }, [isStreamLive, streamId, refetchMessages]);
 
     // Create a new stream
     const handleCreateStream = async () => {
@@ -231,7 +314,7 @@ export default function LiveStreamWithChat() {
 
             if (result.success) {
                 toast.success("Stream created successfully!");
-                // Force refetch
+                setLocalStreamStatus("scheduled");
                 setTimeout(() => refetchStreams(), 100);
             }
         } catch (error: any) {
@@ -247,20 +330,17 @@ export default function LiveStreamWithChat() {
         }
 
         setIsStartingStream(true);
-        // Optimistically update UI
-        setLocalStreamStatus("starting");
+        setLocalStreamStatus("live");
 
         try {
             const result = await startLivestream(streamId).unwrap();
 
             if (result.success) {
                 toast.success("Stream started successfully!");
-                // Force refetch to get updated status
                 setTimeout(() => refetchStreams(), 100);
             }
         } catch (error: any) {
             toast.error(error?.data?.message || "Failed to start stream");
-            // Revert optimistic update on error
             setLocalStreamStatus("scheduled");
         } finally {
             setIsStartingStream(false);
@@ -274,12 +354,12 @@ export default function LiveStreamWithChat() {
         setIsStoppingStream(true);
 
         try {
+            await cleanupAgora();
+
             const result = await endLivestream(streamId).unwrap();
 
             if (result.success) {
                 toast.success("Stream stopped successfully!");
-                cleanupLocalMedia();
-                // Force refetch to get updated status
                 setTimeout(() => refetchStreams(), 100);
             }
         } catch (error: any) {
@@ -401,8 +481,10 @@ export default function LiveStreamWithChat() {
                             </Button>
                         ) : (
                             <div className="flex items-center gap-2 text-sm">
-                                <div className={`w-2 h-2 rounded-full ${streamStatus === "live" ? "bg-red-500 animate-pulse" : streamStatus === "starting" ? "bg-yellow-500 animate-pulse" : streamStatus === "scheduled" ? "bg-blue-500" : "bg-gray-500"}`} />
-                                <span className={streamStatus === "live" ? "text-red-600" : streamStatus === "starting" ? "text-yellow-600" : streamStatus === "scheduled" ? "text-blue-600" : "text-gray-600"}>{streamStatus === "live" ? "Stream is LIVE" : streamStatus === "starting" ? "Stream is starting..." : streamStatus === "scheduled" ? "Stream is scheduled" : "Stream ended"}</span>
+                                <div className={`w-2 h-2 rounded-full ${isStreamLive ? "bg-red-500 animate-pulse" : isStreamStarting ? "bg-yellow-500 animate-pulse" : isStreamScheduled ? "bg-blue-500" : isStreamEnded ? "bg-gray-500" : isStreamCancelled ? "bg-gray-500" : "bg-green-500"}`} />
+                                <span className={isStreamLive ? "text-red-600" : isStreamStarting ? "text-yellow-600" : isStreamScheduled ? "text-blue-600" : isStreamEnded ? "text-gray-600" : isStreamCancelled ? "text-gray-600" : "text-green-600"}>
+                                    {isStreamLive ? "Stream is LIVE" : isStreamStarting ? "Stream is starting..." : isStreamScheduled ? "Stream is scheduled" : isStreamEnded ? "Stream has ended" : isStreamCancelled ? "Stream was cancelled" : "Stream created"}
+                                </span>
                             </div>
                         )}
                     </div>
@@ -430,10 +512,19 @@ export default function LiveStreamWithChat() {
                             </div>
 
                             <div ref={videoContainerRef} className="relative bg-black rounded-lg overflow-hidden aspect-video flex items-center justify-center">
-                                {isStreamActive ? (
-                                    // Show camera when stream is live or starting
-                                    <>
-                                        {/* Camera feed will show here */}
+                                {/* Show black screen for ended, cancelled, starting */}
+                                {isStreamEnded || isStreamCancelled || isStreamStarting ? (
+                                    <div className="text-center text-white space-y-4">
+                                        <Play className="w-16 h-16 mx-auto opacity-50" strokeWidth={1} />
+                                        <div>
+                                            <p className="text-lg font-semibold">{isStreamEnded ? "Stream Has Ended" : isStreamCancelled ? "Stream Was Cancelled" : "Stream is Starting..."}</p>
+                                            <p className="text-sm text-gray-400">{isStreamEnded ? "This stream has concluded" : isStreamCancelled ? "This stream was cancelled" : "Stream will start shortly..."}</p>
+                                        </div>
+                                    </div>
+                                ) : isStreamLive ? (
+                                    // Show camera when stream is live - FIXED LAYOUT
+                                    <div className="absolute inset-0 w-full h-full">
+                                        {/* LIVE badge */}
                                         <div className="absolute top-4 left-4 z-10">
                                             <div className="flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full">
                                                 <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
@@ -441,29 +532,61 @@ export default function LiveStreamWithChat() {
                                             </div>
                                         </div>
 
-                                        <div className="absolute bottom-4 right-4 z-10 flex gap-2">
-                                            <Button variant={isVideoEnabled ? "secondary" : "destructive"} size="icon" className="rounded-full w-10 h-10" onClick={toggleVideo}>
-                                                {isVideoEnabled ? <EyeOff className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                                            </Button>
-                                            <Button variant={isAudioEnabled ? "secondary" : "destructive"} size="icon" className="rounded-full w-10 h-10" onClick={toggleAudio}>
-                                                {isAudioEnabled ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                                            </Button>
-                                            <Button variant="destructive" size="icon" className="rounded-full w-10 h-10" onClick={handleStopStream} disabled={isStoppingStream}>
-                                                {isStoppingStream ? <Loader2 className="h-4 w-4 animate-spin" /> : <Square className="h-4 w-4" />}
-                                            </Button>
-                                        </div>
-                                    </>
+                                        {/* Camera error message */}
+                                        {cameraError && (
+                                            <div className="absolute top-20 left-4 right-4 z-30 bg-red-900/80 backdrop-blur-sm text-white p-4 rounded-lg">
+                                                <p className="font-semibold">Camera Error</p>
+                                                <p className="text-sm mt-1">{cameraError}</p>
+                                                <Button
+                                                    onClick={() => {
+                                                        setCameraError(null);
+                                                        setupCameraAndJoinAgora();
+                                                    }}
+                                                    size="sm"
+                                                    className="mt-2 bg-white text-red-700 hover:bg-gray-100"
+                                                >
+                                                    Retry Camera
+                                                </Button>
+                                            </div>
+                                        )}
+
+                                        {/* Loading overlay - only show when camera is NOT ready */}
+                                        {(isLoadingToken || !isCameraReady) && !cameraError && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20">
+                                                <div className="text-center text-white space-y-4">
+                                                    <Loader2 className="w-16 h-16 mx-auto opacity-50 animate-spin" />
+                                                    <p className="text-lg font-semibold">{isLoadingToken ? "Getting streaming token..." : "Setting up camera..."}</p>
+                                                    <p className="text-sm text-gray-400">Please wait while we connect your camera</p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Control buttons - ALWAYS VISIBLE when stream is live */}
+                                        {isCameraReady && (
+                                            <div className="absolute bottom-4 right-4 z-30 flex gap-2">
+                                                <Button variant={isVideoEnabled ? "secondary" : "destructive"} size="icon" className="rounded-full w-10 h-10 bg-black/70 backdrop-blur-sm border border-white/20 hover:bg-black/90 shadow-lg" onClick={toggleVideo} disabled={!localVideoTrackRef.current}>
+                                                    {isVideoEnabled ? <EyeOff className="h-4 w-4 text-white" /> : <Video className="h-4 w-4 text-white" />}
+                                                </Button>
+                                                <Button variant={isAudioEnabled ? "secondary" : "destructive"} size="icon" className="rounded-full w-10 h-10 bg-black/70 backdrop-blur-sm border border-white/20 hover:bg-black/90 shadow-lg" onClick={toggleAudio} disabled={!localAudioTrackRef.current}>
+                                                    {isAudioEnabled ? <MicOff className="h-4 w-4 text-white" /> : <MicIcon className="h-4 w-4 text-white" />}
+                                                </Button>
+                                                <Button variant="destructive" size="icon" className="rounded-full w-10 h-10 bg-red-600 hover:bg-red-700 shadow-xl border-2 border-white/20" onClick={handleStopStream} disabled={isStoppingStream}>
+                                                    {isStoppingStream ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : <Square className="h-4 w-4 text-white" />}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
                                 ) : (
-                                    // Show start stream UI when stream is not active
+                                    // Show start stream UI when stream is scheduled
                                     <div className="text-center text-white space-y-4">
                                         <Play className="w-16 h-16 mx-auto opacity-50" strokeWidth={1} />
                                         <div>
-                                            <p className="text-lg font-semibold">{!existingStream ? "No Stream Created" : streamStatus === "scheduled" ? "Stream is Ready" : streamStatus === "ended" ? "Stream Has Ended" : "Stream Not Active"}</p>
-                                            <p className="text-sm text-gray-400">{!existingStream ? "Create a stream first" : streamStatus === "scheduled" ? "Click Start to begin broadcasting" : streamStatus === "ended" ? "This stream has concluded" : "Ready to start streaming"}</p>
+                                            <p className="text-lg font-semibold">{!existingStream ? "No Stream Created" : isStreamScheduled ? "Stream is Ready" : "Stream Not Active"}</p>
+                                            <p className="text-sm text-gray-400">{!existingStream ? "Create a stream first" : isStreamScheduled ? "Click Start to begin broadcasting" : "Ready to start streaming"}</p>
                                         </div>
                                         {/* Only show Start button when stream is scheduled */}
-                                        {existingStream && streamStatus === "scheduled" && (
-                                            <Button onClick={handleStartStream} className="gap-2 bg-white text-black hover:bg-gray-200" disabled={isStartingStream}>
+                                        {isStreamScheduled && (
+                                            <Button onClick={handleStartStream} className="gap-2 bg-white text-black hover:bg-gray-200 shadow-lg" disabled={isStartingStream}>
                                                 {isStartingStream ? (
                                                     <>
                                                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -489,7 +612,7 @@ export default function LiveStreamWithChat() {
                             <div className="flex items-center justify-between p-4 border-b border-border">
                                 <div>
                                     <h2 className="text-lg font-semibold">Live Chat</h2>
-                                    <p className="text-xs text-muted-foreground">{isStreamActive ? "Interact with your audience in real-time" : streamStatus === "scheduled" ? "Chat will be available when stream starts" : streamStatus === "ended" ? "Chat is now read-only" : "Chat not available"}</p>
+                                    <p className="text-xs text-muted-foreground">{isStreamLive ? "Interact with your audience in real-time" : isStreamScheduled ? "Chat will be available when stream starts" : isStreamEnded ? "Chat is now read-only" : isStreamStarting ? "Chat will be available when stream starts" : "Chat not available"}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Users className="w-4 h-4" />
@@ -497,7 +620,7 @@ export default function LiveStreamWithChat() {
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[400px]">
+                            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[400px]">
                                 {isLoadingMessages ? (
                                     <div className="flex justify-center items-center h-20">
                                         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -505,18 +628,23 @@ export default function LiveStreamWithChat() {
                                 ) : messages.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-full text-center">
                                         <div className="text-muted-foreground space-y-1">
-                                            <p className="text-sm font-medium">{isStreamActive ? "No messages yet" : streamStatus === "scheduled" ? "Start stream to enable chat" : "Chat not available"}</p>
-                                            <p className="text-xs">{isStreamActive ? "Be the first to send a message!" : streamStatus === "scheduled" ? "Chat will appear here" : "Chat is disabled"}</p>
+                                            <p className="text-sm font-medium">{isStreamLive ? "No messages yet" : isStreamScheduled ? "Start stream to enable chat" : "Chat not available"}</p>
+                                            <p className="text-xs">{isStreamLive ? "Be the first to send a message!" : isStreamScheduled ? "Chat will appear here" : "Chat is disabled"}</p>
                                         </div>
                                     </div>
                                 ) : (
                                     messages.map((msg: ChatMessage) => (
-                                        <div key={msg.id} className="text-sm bg-muted rounded-lg p-3">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="font-medium text-foreground">{msg.userProfile?.name || "User"}</span>
-                                                <span className="text-xs text-muted-foreground">{formatTime(msg.createdAt)}</span>
+                                        <div key={msg.id} className="flex flex-col gap-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <div className="w-6 h-6 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">{msg.userProfile?.name?.charAt(0) || "U"}</div>
+                                                <div className="flex items-baseline gap-2">
+                                                    <span className="font-semibold text-foreground text-sm">{msg.userProfile?.name || "User"}</span>
+                                                    <span className="text-xs text-muted-foreground">{formatTime(msg.createdAt)}</span>
+                                                </div>
                                             </div>
-                                            <p className="text-foreground">{msg.message}</p>
+                                            <div className="ml-8 bg-linear-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm border border-gray-200 dark:border-gray-700">
+                                                <p className="text-foreground text-sm leading-relaxed">{msg.message}</p>
+                                            </div>
                                         </div>
                                     ))
                                 )}
@@ -525,14 +653,14 @@ export default function LiveStreamWithChat() {
                             <div className="p-4 border-t border-border">
                                 <div className="flex items-center gap-2">
                                     <Input
-                                        placeholder={isStreamActive ? "Type a message..." : streamStatus === "scheduled" ? "Start stream to enable chat" : streamStatus === "ended" ? "Chat is now read-only" : "Chat not available"}
+                                        placeholder={isStreamLive ? "Type a message..." : isStreamScheduled ? "Start stream to enable chat" : isStreamEnded ? "Chat is now read-only" : isStreamStarting ? "Stream is starting..." : "Chat not available"}
                                         value={inputValue}
                                         onChange={(e) => setInputValue(e.target.value)}
                                         onKeyDown={handleKeyPress}
                                         className="flex-1 bg-background"
-                                        disabled={!isStreamActive || isSendingMessage}
+                                        disabled={!isStreamLive || isSendingMessage}
                                     />
-                                    <Button onClick={handleSendMessage} size="sm" className="gap-2 bg-foreground text-background hover:opacity-90 shrink-0" disabled={!inputValue.trim() || !isStreamActive || isSendingMessage}>
+                                    <Button onClick={handleSendMessage} size="sm" className="gap-2 bg-foreground text-background hover:opacity-90 shrink-0" disabled={!inputValue.trim() || !isStreamLive || isSendingMessage}>
                                         {isSendingMessage ? (
                                             <Loader2 className="w-4 h-4 animate-spin" />
                                         ) : (
