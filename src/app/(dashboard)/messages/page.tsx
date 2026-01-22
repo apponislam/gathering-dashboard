@@ -302,7 +302,6 @@ export default function MessagesPage() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [socket, setSocket] = useState<Socket | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
     // RTK Query hooks
@@ -325,7 +324,7 @@ export default function MessagesPage() {
     // Fix for React Compiler: Use simpler dependency array
     const chats = useMemo(() => chatsData?.data?.chats || [], [chatsData?.data?.chats]);
 
-    // Filter chats based on search - REMOVED useMemo to avoid React Compiler warning
+    // Filter chats based on search
     const filteredChats = chats.filter((chat: Chat) => {
         const otherParticipant = chat.participants.find((p) => p._id !== userId);
         if (!otherParticipant) return false;
@@ -333,7 +332,7 @@ export default function MessagesPage() {
         return otherParticipant.name.toLowerCase().includes(searchQuery.toLowerCase()) || chat.lastMessage?.text?.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
-    // Get selected chat details - REMOVED useMemo
+    // Get selected chat details
     const selectedChat = chats.find((chat: Chat) => chat._id === selectedChatId);
 
     // Get other participant in selected chat
@@ -342,7 +341,7 @@ export default function MessagesPage() {
     // Fix for React Compiler: Use simpler dependency for messages
     const messages = useMemo(() => messagesData?.data || [], [messagesData]);
 
-    // Format messages for display - REMOVED useMemo
+    // Format messages for display
     const chatMessages = useMemo(() => {
         if (!userId) return [];
         return messages.map((msg) => ({
@@ -362,7 +361,7 @@ export default function MessagesPage() {
 
     const socketRef = useRef<Socket | null>(null);
 
-    // In your useEffect:
+    // Socket connection
     useEffect(() => {
         if (!userId) return;
 
@@ -425,8 +424,9 @@ export default function MessagesPage() {
 
             await sendMessage(messageData).unwrap();
 
-            if (socket) {
-                socket.emit("sendMessage", {
+            // Use the socket from ref
+            if (socketRef.current) {
+                socketRef.current.emit("sendMessage", {
                     chatId: selectedChatId,
                     sender: userId,
                     text: messageInput,
@@ -474,8 +474,9 @@ export default function MessagesPage() {
     const handleSelectChat = (chatId: string) => {
         setSelectedChatId(chatId);
 
-        if (socket) {
-            socket.emit("markAsRead", { chatId, userId });
+        // Use the socket from ref
+        if (socketRef.current) {
+            socketRef.current.emit("markAsRead", { chatId, userId });
         }
     };
 
@@ -600,8 +601,10 @@ export default function MessagesPage() {
                                 <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                                     <div className={`max-w-[80%] rounded-lg px-3 py-2 ${msg.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
                                         {msg.image && (
-                                            <div className="mb-2 relative h-64 w-full">
-                                                <Image src={msg.image} alt="Message attachment" fill className="rounded-lg object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                                            <div className="mb-2">
+                                                <div className="relative w-[400px] h-[400px]">
+                                                    <Image src={msg.image} alt="Message attachment" fill className="rounded-lg object-contain" sizes="400px" quality={100} priority={true} />
+                                                </div>
                                             </div>
                                         )}
                                         <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
