@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Volume2, Settings, Play, Send, Users, Fullscreen, Minimize2, Loader2, EyeOff, MicOff, Square, Video, Mic as MicIcon } from "lucide-react";
+import { Play, Send, Users, Fullscreen, Minimize2, Loader2, EyeOff, MicOff, Square, Video, Mic as MicIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -499,12 +499,6 @@ export default function LiveStreamWithChat() {
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-semibold">Live Stream</h2>
                                 <div className="flex items-center gap-2">
-                                    <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
-                                        <Volume2 className="w-4 h-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
-                                        <Settings className="w-4 h-4" />
-                                    </Button>
                                     <Button variant="ghost" size="sm" className="w-8 h-8 p-0" onClick={toggleFullscreen} title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}>
                                         {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Fullscreen className="w-4 h-4" />}
                                     </Button>
@@ -565,10 +559,10 @@ export default function LiveStreamWithChat() {
                                         {isCameraReady && (
                                             <div className="absolute bottom-4 right-4 z-30 flex gap-2">
                                                 <Button variant={isVideoEnabled ? "secondary" : "destructive"} size="icon" className="rounded-full w-10 h-10 bg-black/70 backdrop-blur-sm border border-white/20 hover:bg-black/90 shadow-lg" onClick={toggleVideo} disabled={!localVideoTrackRef.current}>
-                                                    {isVideoEnabled ? <EyeOff className="h-4 w-4 text-white" /> : <Video className="h-4 w-4 text-white" />}
+                                                    {isVideoEnabled ? <Video className="h-4 w-4 text-white" /> : <EyeOff className="h-4 w-4 text-white" />}
                                                 </Button>
                                                 <Button variant={isAudioEnabled ? "secondary" : "destructive"} size="icon" className="rounded-full w-10 h-10 bg-black/70 backdrop-blur-sm border border-white/20 hover:bg-black/90 shadow-lg" onClick={toggleAudio} disabled={!localAudioTrackRef.current}>
-                                                    {isAudioEnabled ? <MicOff className="h-4 w-4 text-white" /> : <MicIcon className="h-4 w-4 text-white" />}
+                                                    {isAudioEnabled ? <MicIcon className="h-4 w-4 text-white" /> : <MicOff className="h-4 w-4 text-white" />}
                                                 </Button>
                                                 <Button variant="destructive" size="icon" className="rounded-full w-10 h-10 bg-red-600 hover:bg-red-700 shadow-xl border-2 border-white/20" onClick={handleStopStream} disabled={isStoppingStream}>
                                                     {isStoppingStream ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : <Square className="h-4 w-4 text-white" />}
@@ -620,7 +614,7 @@ export default function LiveStreamWithChat() {
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[400px]">
+                            <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[500px]">
                                 {isLoadingMessages ? (
                                     <div className="flex justify-center items-center h-20">
                                         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
