@@ -1,5 +1,6 @@
-import Broadcast from "@/components/dashboard/my-events/go-live/BrodCast";
+// import Broadcast from "@/components/dashboard/my-events/go-live/BrodCast";
 import EventHeaderAndDetails from "@/components/dashboard/my-events/go-live/EventHeaderAndDetails";
+import MessageContainer from "@/components/dashboard/my-events/go-live/MessageContainer";
 
 export const metadata = {
     title: "Tech Conference 2025",
@@ -11,7 +12,8 @@ export default function Page() {
         <main>
             <EventHeaderAndDetails />
             {/* <LiveStreamWithChat /> */}
-            <Broadcast />
+            {/* <Broadcast /> */}
+            <MessageContainer></MessageContainer>
         </main>
     );
 }
