@@ -33,8 +33,8 @@ export default function Login_Form() {
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            email: "web.mohosin@gmail.com",
-            password: "12345678",
+            email: "",
+            password: "",
             rememberMe: false,
         },
     });
@@ -52,7 +52,7 @@ export default function Login_Form() {
                     setCredentials({
                         accessToken: response.data.accessToken,
                         role: response.data.role,
-                    })
+                    }),
                 );
 
                 toast.success("Login successful!");
