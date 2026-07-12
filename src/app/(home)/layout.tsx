@@ -18,7 +18,6 @@ export default function HomeLayout({
         { name: "Support", href: "/support", icon: HelpCircle },
         { name: "Privacy Policy", href: "/privacy-policy", icon: Shield },
         { name: "Terms of Service", href: "/terms-of-service", icon: FileText },
-        { name: "Delete Account", href: "/delete-account", icon: UserX },
     ];
 
     const isActive = (path: string) => pathname === path;

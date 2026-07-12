@@ -121,10 +121,7 @@ export default function PrivacyPolicyPage() {
                             6. Your Rights & Account Deletion
                         </h2>
                         <p>
-                            You have the right to access, inspect, update, or permanently erase your personal records in Gathering. If you wish to delete your account, you can perform it directly in the App settings under &quot;My Account&quot;, or submit a request online via our portal at the link below:
-                        </p>
-                        <p className="mt-3">
-                            Account deletion request page: <a href="/delete-account" className="text-purple-700 font-semibold hover:underline">/delete-account</a>
+                            You have the right to access, inspect, update, or permanently erase your personal records in Gathering. If you wish to delete your account, you can perform it directly in the App settings under &quot;My Account&quot;, or contact us at <a href="mailto:support@gatheringapp.com" className="text-purple-700 hover:underline">support@gatheringapp.com</a>.
                         </p>
                     </section>
 
