@@ -33,7 +33,28 @@ export const publicContentApi = baseApi.injectEndpoints({
             }),
             providesTags: ["TermsAndCondition"],
         }),
+
+        createOrUpdatePublicContent: builder.mutation<PublicContentResponse, { content: string; type: string }>({
+            query: (body) => ({
+                url: "/public",
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: (result, error, arg) => {
+                if (arg.type === "privacy-policy") {
+                    return ["PrivacyPolicy"];
+                } else if (arg.type === "terms-and-condition") {
+                    return ["TermsAndCondition"];
+                }
+                return ["PrivacyPolicy", "TermsAndCondition"];
+            },
+        }),
     }),
 });
 
-export const { useGetPrivacyPolicyQuery, useGetTermsAndConditionQuery } = publicContentApi;
+export const { 
+    useGetPrivacyPolicyQuery, 
+    useGetTermsAndConditionQuery,
+    useCreateOrUpdatePublicContentMutation,
+} = publicContentApi;
+

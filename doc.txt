@@ -1,6 +1,6 @@
 # https://api.gatheringww.com/api/v1/public/terms-and-condition
 # https://api.gatheringww.com/api/v1/public/privacy-policy
-
+{{base_url}}/api/v1/public
 
 {
 "statusCode": 200,
@@ -16,3 +16,12 @@
 }
 
 
+this is post 
+
+{{base_url}}/api/v1/public
+
+{
+    "content" : "asdfasdf",
+    "type" : "privacy-policy"
+}
+"type" : "terms-and-condition"

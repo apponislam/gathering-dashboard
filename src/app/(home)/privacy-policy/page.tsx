@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage() {
 
                     {!isLoading && !isError && content && (
                         <div
-                            className="prose prose-slate max-w-none prose-headings:text-slate-900 prose-a:text-purple-700 prose-a:hover:underline"
+                            className="rich-content max-w-none"
                             dangerouslySetInnerHTML={{ __html: content }}
                         />
                     )}

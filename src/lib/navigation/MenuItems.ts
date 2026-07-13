@@ -29,7 +29,7 @@
 // ];
 
 "use client";
-import { LayoutDashboard, Users, Calendar, FileText, Bell, Megaphone, MessageSquare } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, FileText, Bell, Megaphone, MessageSquare, Shield } from "lucide-react";
 // import { useEffect, useState } from "react";
 
 export interface MenuItem {
@@ -65,6 +65,11 @@ export const menuItems: Record<string, MenuItem[]> = {
             url: "/notifications",
             icon: Bell,
         },
+        {
+            title: "Privacy & Terms",
+            url: "/privacy-terms",
+            icon: Shield,
+        },
     ],
     super_admin: [
         {
@@ -91,6 +96,11 @@ export const menuItems: Record<string, MenuItem[]> = {
             title: "Notifications",
             url: "/notifications",
             icon: Bell,
+        },
+        {
+            title: "Privacy & Terms",
+            url: "/privacy-terms",
+            icon: Shield,
         },
     ],
     organizer: [
