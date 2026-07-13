@@ -23,6 +23,7 @@ export const publicContentApi = baseApi.injectEndpoints({
                 url: "/public/privacy-policy",
                 method: "GET",
             }),
+            providesTags: ["PrivacyPolicy"],
         }),
 
         getTermsAndCondition: builder.query<PublicContentResponse, void>({
@@ -30,6 +31,7 @@ export const publicContentApi = baseApi.injectEndpoints({
                 url: "/public/terms-and-condition",
                 method: "GET",
             }),
+            providesTags: ["TermsAndCondition"],
         }),
     }),
 });
