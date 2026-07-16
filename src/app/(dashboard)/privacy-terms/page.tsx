@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Loader2, Shield } from "lucide-react";
+import { Loader2, Shield, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -243,12 +243,29 @@ export default function PrivacyTermsPage() {
                                 </p>
                             )}
                         </div>
-                        <Button
-                            onClick={() => setIsEditing(true)}
-                            className="bg-[#4F46E5] text-white hover:bg-[#4338CA] rounded-full px-6 font-medium cursor-pointer"
-                        >
-                            Edit Content
-                        </Button>
+                        <div className="flex items-center gap-3">
+                            <Button
+                                asChild
+                                variant="outline"
+                                className="border-slate-300 hover:bg-slate-100 text-slate-700 rounded-full px-6 font-medium cursor-pointer"
+                            >
+                                <a
+                                    href={activeTab === "privacy" ? "/privacy-policy" : "/terms-of-service"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center"
+                                >
+                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    View Live
+                                </a>
+                            </Button>
+                            <Button
+                                onClick={() => setIsEditing(true)}
+                                className="bg-[#4F46E5] text-white hover:bg-[#4338CA] rounded-full px-6 font-medium cursor-pointer"
+                            >
+                                Edit Content
+                            </Button>
+                        </div>
                     </div>
                     <div className="p-6 sm:p-8">
                         {initialContent ? (

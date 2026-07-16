@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { HelpCircle, Mail, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
+import { HelpCircle, Mail, MessageSquare, ChevronDown, ChevronUp, Phone } from "lucide-react";
 
 const faqs = [
     {
@@ -83,9 +83,16 @@ export default function SupportPage() {
                     <div className="bg-gradient-to-r from-[#412667] to-[#593985] text-white p-6 rounded-3xl shadow-sm mt-8 text-center">
                         <h3 className="font-bold text-lg">Direct Support Inquiry</h3>
                         <p className="text-sm text-purple-200 mt-1">Our support representatives are active 24/7 to resolve technical, safety, or administrative tickets.</p>
-                        <div className="mt-4 flex items-center justify-center gap-2 text-base font-semibold text-[#67E9F1]">
-                            <Mail className="h-5 w-5" />
-                            <a href="mailto:support@gatheringapp.com" className="hover:underline">support@gatheringapp.com</a>
+                        <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-base font-semibold text-[#67E9F1]">
+                            <div className="flex items-center gap-2">
+                                <Mail className="h-5 w-5" />
+                                <a href="mailto:gatheringllc1@gmail.com" className="hover:underline">gatheringllc1@gmail.com</a>
+                            </div>
+                            <span className="hidden sm:inline text-purple-300">|</span>
+                            <div className="flex items-center gap-2">
+                                <Phone className="h-5 w-5" />
+                                <a href="tel:+19725617918" className="hover:underline">+1 (972) 561-7918</a>
+                            </div>
                         </div>
                     </div>
                 </div>

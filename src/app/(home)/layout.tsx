@@ -156,14 +156,17 @@ export default function HomeLayout({
                                 </Link>
                             ))}
                         </div>
-                        <div className="md:text-right">
-                            <p className="text-sm text-slate-500">
-                                Need direct support?
-                            </p>
-                            <Link href="/support" className="text-sm font-semibold text-[#67E9F1] hover:underline">
-                                contact@gatheringapp.com
-                            </Link>
-                        </div>
+                         <div className="md:text-right flex flex-col md:items-end gap-1">
+                             <p className="text-sm text-slate-500">
+                                 Need direct support?
+                             </p>
+                             <Link href="/support" className="text-sm font-semibold text-[#67E9F1] hover:underline">
+                                 gatheringllc1@gmail.com
+                             </Link>
+                             <a href="tel:+19725617918" className="text-xs text-slate-400 hover:text-white transition-colors">
+                                 +1 (972) 561-7918
+                             </a>
+                         </div>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
                         <p>© {new Date().getFullYear()} Gathering Inc. All rights reserved.</p>
