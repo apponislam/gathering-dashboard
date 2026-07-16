@@ -6,11 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X, Shield, FileText, HelpCircle, UserX, ArrowRight, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function HomeLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function HomeLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -31,16 +27,12 @@ export default function HomeLayout({
                         {/* Logo */}
                         <div className="flex items-center">
                             <Link href="/" className="flex items-center gap-2 group">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#412667] to-[#593985] text-white shadow-md shadow-purple-950/20 group-hover:scale-105 transition-all">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-[#412667] to-[#593985] text-white shadow-md shadow-purple-950/20 group-hover:scale-105 transition-all">
                                     <Calendar className="h-5 w-5" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-xl font-bold tracking-tight text-[#412667]">
-                                        Gathering
-                                    </span>
-                                    <span className="text-[10px] font-semibold tracking-wider text-[#1AA367] uppercase -mt-1">
-                                        App Portal
-                                    </span>
+                                    <span className="text-xl font-bold tracking-tight text-[#412667]">Gathering</span>
+                                    <span className="text-[10px] font-semibold tracking-wider text-[#1AA367] uppercase -mt-1">App Portal</span>
                                 </div>
                             </Link>
                         </div>
@@ -48,15 +40,7 @@ export default function HomeLayout({
                         {/* Desktop Nav */}
                         <nav className="hidden md:flex items-center gap-6">
                             {navigation.map((item) => (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={`text-sm font-medium transition-colors hover:text-[#412667] ${
-                                        isActive(item.href)
-                                            ? "text-[#412667] underline decoration-[#1AA367] decoration-2 underline-offset-8 font-semibold"
-                                            : "text-slate-600"
-                                    }`}
-                                >
+                                <Link key={item.name} href={item.href} className={`text-sm font-medium transition-colors hover:text-[#412667] ${isActive(item.href) ? "text-[#412667] underline decoration-[#1AA367] decoration-2 underline-offset-8 font-semibold" : "text-slate-600"}`}>
                                     {item.name}
                                 </Link>
                             ))}
@@ -74,17 +58,9 @@ export default function HomeLayout({
 
                         {/* Mobile menu button */}
                         <div className="flex md:hidden">
-                            <button
-                                type="button"
-                                className="inline-flex items-center justify-center rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#412667]/20"
-                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            >
+                            <button type="button" className="inline-flex items-center justify-center rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#412667]/20" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                                 <span className="sr-only">Open main menu</span>
-                                {mobileMenuOpen ? (
-                                    <X className="block h-6 w-6" aria-hidden="true" />
-                                ) : (
-                                    <Menu className="block h-6 w-6" aria-hidden="true" />
-                                )}
+                                {mobileMenuOpen ? <X className="block h-6 w-6" aria-hidden="true" /> : <Menu className="block h-6 w-6" aria-hidden="true" />}
                             </button>
                         </div>
                     </div>
@@ -100,11 +76,7 @@ export default function HomeLayout({
                                     key={item.name}
                                     href={item.href}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${
-                                        isActive(item.href)
-                                            ? "bg-[#412667]/5 text-[#412667]"
-                                            : "text-slate-600 hover:bg-slate-50 hover:text-[#412667]"
-                                    }`}
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${isActive(item.href) ? "bg-[#412667]/5 text-[#412667]" : "text-slate-600 hover:bg-slate-50 hover:text-[#412667]"}`}
                                 >
                                     <Icon className={`h-5 w-5 ${isActive(item.href) ? "text-[#1AA367]" : "text-slate-400"}`} />
                                     {item.name}
@@ -124,9 +96,7 @@ export default function HomeLayout({
             </header>
 
             {/* Main Content Area */}
-            <main className="flex-grow">
-                {children}
-            </main>
+            <main className="grow">{children}</main>
 
             {/* Footer */}
             <footer className="bg-slate-900 text-slate-400 border-t border-slate-800">
@@ -134,46 +104,40 @@ export default function HomeLayout({
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center border-b border-slate-800 pb-8 mb-8">
                         <div>
                             <Link href="/" className="flex items-center gap-2 group mb-3">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#412667] to-[#593985] text-white shadow-md">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-[#412667] to-[#593985] text-white shadow-md">
                                     <Calendar className="h-4 w-4" />
                                 </div>
-                                <span className="text-lg font-bold tracking-tight text-white">
-                                    Gathering
-                                </span>
+                                <span className="text-lg font-bold tracking-tight text-white">Gathering</span>
                             </Link>
-                            <p className="text-sm text-slate-400 max-w-xs">
-                                The ultimate platform for managing, organizing, and connecting at local events.
-                            </p>
+                            <p className="text-sm text-slate-400 max-w-xs">The ultimate platform for managing, organizing, and connecting at local events.</p>
                         </div>
                         <div className="flex flex-wrap gap-x-6 gap-y-2 md:justify-center">
                             {navigation.map((item) => (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className="text-sm hover:text-white transition-colors"
-                                >
+                                <Link key={item.name} href={item.href} className="text-sm hover:text-white transition-colors">
                                     {item.name}
                                 </Link>
                             ))}
                         </div>
-                         <div className="md:text-right flex flex-col md:items-end gap-1">
-                             <p className="text-sm text-slate-500">
-                                 Need direct support?
-                             </p>
-                             <Link href="/support" className="text-sm font-semibold text-[#67E9F1] hover:underline">
-                                 gatheringllc1@gmail.com
-                             </Link>
-                             <a href="tel:+19725617918" className="text-xs text-slate-400 hover:text-white transition-colors">
-                                 +1 (972) 561-7918
-                             </a>
-                         </div>
+                        <div className="md:text-right flex flex-col md:items-end gap-1">
+                            <p className="text-sm text-slate-500">Need direct support?</p>
+                            <Link href="/support" className="text-sm font-semibold text-[#67E9F1] hover:underline">
+                                gatheringllc1@gmail.com
+                            </Link>
+                            <a href="tel:+19725617918" className="text-xs text-slate-400 hover:text-white transition-colors">
+                                +1 (972) 561-7918
+                            </a>
+                        </div>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
                         <p>© {new Date().getFullYear()} Gathering Inc. All rights reserved.</p>
                         <div className="flex gap-4">
-                            <Link href="/privacy-policy" className="hover:text-slate-400">Privacy Policy</Link>
+                            <Link href="/privacy-policy" className="hover:text-slate-400">
+                                Privacy Policy
+                            </Link>
                             <span>•</span>
-                            <Link href="/terms-of-service" className="hover:text-slate-400">Terms of Service</Link>
+                            <Link href="/terms-of-service" className="hover:text-slate-400">
+                                Terms of Service
+                            </Link>
                         </div>
                     </div>
                 </div>
